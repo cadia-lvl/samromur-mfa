@@ -21,12 +21,13 @@ then
     mkdir 'log'
 fi
 
-# Initialize the option "overwrite" and "display"
+# Initialize the option "overwrite"
 ov=false
 if [ "$1" == "-o" ] || [ "$1" == "--overwrite" ]
 then
     ov=true
 fi
+
 
 
 echo '========== Preparing folders =========='
@@ -52,7 +53,7 @@ echo '========== Making lexicon =========='
 # If the user doesn't want to overwrite on existing file and if there is an existing file, it displays a message and go to the next step. 
 if [ $ov == false ] && [ -f $lex_file ]
 then
-    printf " ${Yellow}NOTHING DONE${NC} : %s already created.\n " "$lex_file"
+    printf " ${Yellow}NOTHING DONE${NC} : %s already existing.\n " "$lex_file"
 else
     # We call the make_lexicon.py program, using the informations in the info.json file and putting the errors messages in lex.log file located in log folder.
     python3 make_lexicon.py info.json 2> log/lex.log
@@ -70,11 +71,12 @@ fi
 # Creating the lexicon file of the data folder
 
 
+
 echo '========== Making dictionnary =========='
 
 if [ $ov == false ] && [ -f $dict_file ]
 then
-    printf " ${Yellow}NOTHING DONE${NC} : %s already created.\n " "$dict_file"
+    printf " ${Yellow}NOTHING DONE${NC} : %s already existing.\n " "$dict_file"
 else
     # We create a dictionary of phoneme  using the lexicon, the model 'ipd_clean_slt2018.mdl'.
     python3 -m g2p --model ipd_clean_slt2018.mdl --apply "$lex_file" --encoding='utf-8' > "$dict_file" 2> log/dict.log
@@ -143,4 +145,4 @@ else
 fi    
 # Checking if the alignment has been done in all files
 
-printf " Program finished without errors.\n "
+printf " ${Green}==================== Program finished without errors ====================${NC}\n "

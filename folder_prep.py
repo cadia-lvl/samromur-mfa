@@ -2,32 +2,6 @@ import os, sys, json
 import pandas as pd
 from alive_progress import alive_bar
 
-""" try:
-    import os
-except:
-    raise ImportError("os packages is not installed.")
-
-try:
-    from alive_progress import alive_bar
-except:
-    raise ImportError("alive_progresse packages is not installed.")
-
-try:
-    import pandas as pd
-except:
-    raise ImportError("pandas packages is not installed.")
-
-try:
-    import sys
-except:
-    raise ImportError("sys packages is not installed.")
-
-try:
-    import json
-except:
-    raise ImportError("json packages is not installed.") """
-
-
 try:
     with open(sys.argv[1]) as fichierOptions:
         options = json.load(fichierOptions)
