@@ -11,7 +11,7 @@ except:
 
     
 try:
-    df_meta = pd.read_csv(options['path_to_data'] + options['metadata_file'], sep='\t', index_col=0, low_memory=False)
+    df_meta = pd.read_csv(options['path_to_data'] + options['metadata_file']['name'], sep=options['metadata_file']['sep'], index_col=0, low_memory=False)
     # Retrieval of the infos of all the individuals, which is put in argument.
 except:
     raise NameError("Name of the metadata file is incorrect. Try changing it in the info.json program, line 4.")
@@ -36,7 +36,7 @@ with alive_bar(bar='blocks') as bar :
                     ind = int(filename[-7:])
                     # As the index of the audio file in the dataframe is the last part of the audio file name, we use that property 
                     # to get the sentence corresponding to the audio file in the dataframe :
-                    sent = df_meta.loc[ind, 'sentence_norm']
+                    sent = df_meta.loc[ind, options['metadata_file']['columns_utt_name']]
 
                     # We create a file for every sentence/utterance, which got the same name as the audio file, and has the .txt extension.
                     f = open(options['path_to_data'] + options['data_folder'] + "/" + folder_i + "/" + filename + ".txt", "w")

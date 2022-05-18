@@ -7,13 +7,13 @@ with open(sys.argv[1]) as fichierOptions:
     options = json.load(fichierOptions)
 
 # Retrieval of the infos of all the individuals, which is put in argument.
-df_meta = pd.read_csv(options['path_to_data'] + options['metadata_file'], sep='\t', index_col=0, low_memory=False)
+df_meta = pd.read_csv(options['path_to_data'] + options['metadata_file']['name'], options['metadata_file']['sep'], index_col=0, low_memory=False)
 
 # Creating a dictionnary which will contain a list of all the words beginning by the letter in index.
 word_dict = {"a" : [],"á" : [],"b" : [], "c" : [],"d" : [],"ð" : [],"e" : [],"é" : [],"f" : [],"g" : [],"h" : [],"i" : [],"í" : [],"j" : [],"k" : [],"l" : [],"m" : [],"n" : [],"o" : [],"ó" : [],"p" : [], "q" : [],"r" : [],"s" : [],"t" : [],"u" : [],"ú" : [],"v" : [], "w" : [],"x" : [],"y" : [],"ý" : [], "z" : [],"þ" : [],"æ" : [],"ö" : []}
 
 # Transforming the utterances in the dataframe in a list of utterances 
-sent_list = df_meta["sentence_norm"].to_list()
+sent_list = df_meta[options['metadata_file']['columns_utt_name']].to_list()
 
 with alive_bar(bar='blocks') as bar :
     # For every sentences :

@@ -1,0 +1,77 @@
+# Preparation for Montreal Forced Alignment with Samromur dataset
+This tool is to align and segmentate a dataset of audio files to prepare it for Kaldi. 
+
+The input is a folder with multiple speakers, for which there are one or several audio file. An audio file is made up of a sentence, spoke in Icelandic. To use this tool, the data has to be in this form :
+
+'''
+data_folder/
+├── id_user_1/
+│   ├── id_user_1-id_file_1.flac
+│   ├── id_user_1-id_file_2.flac
+│   └── id_user_1-id_file_3.flac
+├── id_user_2/
+│   ├── id_user_2-id_file_4.flac
+│   ├── id_user_2-id_file_5.flac
+│   ├── id_user_2-id_file_6.flac
+│   ├── id_user_2-id_file_7.flac
+│   └── id_user_2-id_file_8.flac
+├── id_user_3/
+│   ├── id_user_3-id_file_9.flac
+│   └── id_user_3-id_file_10.flac
+├── id_user_4/
+│   ├── id_user_4-id_file_11.flac
+│   ├── id_user_4-id_file_12.flac
+│   ├── id_user_4-id_file_13.flac
+│   ├── id_user_4-id_file_14.flac
+│   └── id_user_4-id_file_15.flac
+├── ...
+'''
+
+Another file is required to use this tool : a metadata file, containing every information about the audio files. This file has to be 
+
+# Table of Contents
+[Easy to use TOC generator](https://ecotrust-canada.github.io/markdown-toc/)
+
+# Installation
+
+* software requirements
+* dependencies
+
+It is also helpful to provide commands which assist user installing the program or even providing an `install.sh` script which does it for the user.
+
+# Running
+How to run the program/application/model and common use-cases and outputs.
+For the program to be easily usable this section can be quite long.
+Make sure to include explenations for all coding examples since it makes them much more understandable. 
+
+## API reference (Optional)
+If lengthy, this should be a separate document placed as HTML into the `docs/` folder. For more inforation see `documentation`
+
+# License
+Mention which LICENSE the code uses and refer to the LICENSE file. For more information about licensing later.
+
+# Authors/Credit
+Reykjavik University
+
+Main authors <email.addresses>
+
+## Acknowledgements
+If the funding is from a public grant, mention the source of the funding and link to their website.
+
+"This project was funded by the Language Technology Programme for Icelandic 2019-2023. The programme, which is managed and coordinated by [Almannarómur](https://almannaromur.is/), is funded by the Icelandic Ministry of Education, Science and Culture."
+
+# Contributing (Optional)
+Explain how people can contribute to this repository. This can also link to a separate Developer reference (Contributing.md)
+
+* how to contribute
+* creating issues
+* where to get data
+* testing
+
+## Description of folder structure (Optional)
+
+# Changelog/Versions (Optional)
+# Papers/References (Optional)
+
+You would have a citation snippet here as a code block. For papers not yet accepted it is fine to mention you have submitted a paper to a particular conference and mention how you will reference it once has been accepted. For example you could add a citation or include the paper in the docs folder. 
+```
