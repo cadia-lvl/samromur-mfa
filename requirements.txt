@@ -1,0 +1,5 @@
+pandas==0.24.2
+sequitur-g2p==1.0.1668.21
+alive-progress==1.6.2
+jsonlines==1.2.0
+-e .

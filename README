@@ -84,8 +84,17 @@ It is necessary to adapt the informations inside it as your case, in order for a
 	- **sep** : separator of the data.
 
 # Running
+## Requirements
 
+To run all the program successfully, you need to install some packages, if they weren't install. To help you, you can run the following command :
 
+```python
+pip install -r requirements.txt
+```
+
+You also must install Sequitur (https://www-i6.informatik.rwth-aachen.de/web/Software/g2p.html) and Montreal Forced Aligner (https://montreal-forced-aligner.readthedocs.io/en/latest/getting_started.html) to use this tool.
+
+## 
 
 
 # Table of Contents
