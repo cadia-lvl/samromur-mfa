@@ -8,6 +8,10 @@ with open(sys.argv[1]) as fichierOptions:
 
 # Retrieval of the infos of all the individuals, which is put in argument.
 df_meta = pd.read_csv(options['path_to_data'] + options['metadata_file']['name'], options['metadata_file']['sep'], index_col=0, low_memory=False)
+# f2 = open('df_head.txt', "w")
+# f2.write(df_meta.head())
+# f2.close
+print(df_meta.head())
 
 # Creating a dictionnary which will contain a list of all the words beginning by the letter in index.
 word_dict = {"a" : [],"á" : [],"b" : [], "c" : [],"d" : [],"ð" : [],"e" : [],"é" : [],"f" : [],"g" : [],"h" : [],"i" : [],"í" : [],"j" : [],"k" : [],"l" : [],"m" : [],"n" : [],"o" : [],"ó" : [],"p" : [], "q" : [],"r" : [],"s" : [],"t" : [],"u" : [],"ú" : [],"v" : [], "w" : [],"x" : [],"y" : [],"ý" : [], "z" : [],"þ" : [],"æ" : [],"ö" : []}

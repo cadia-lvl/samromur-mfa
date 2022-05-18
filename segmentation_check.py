@@ -44,7 +44,7 @@ while (clean == False) :
     # Depending on the percentage of errors, the user will maybe don't want to clean. 
     r = input("Do you want to clean ? (y/n)\n")
     if (r == 'y' or r == 'Y') :
-        bash_command_align = "mfa align --clean " + error_folder + " " + options['dictionnary_file'] + " " + options["MFA_model_name"] + ".zip" + " output_2"
+        bash_command_align = "mfa align --clean " + error_folder + " " + options['dictionary_file'] + " " + options["MFA_model_name"] + ".zip" + " output_2"
         os.system(bash_command_align)
     elif (r == 'n' or r == "N") :
         clean = True

@@ -1,9 +1,15 @@
 # Preparation for Montreal Forced Alignment with Samromur dataset
-This tool is to align and segmentate a dataset of audio files to prepare it for Kaldi. 
+This tool is to align and segmentate a dataset of audio files to prepare it for Kaldi using Montreal Forced Alignment (MFA). 
+
+The purpose of this tool is to automatically generate an acoustic model for the data and all the files required from audio files and the metadata. In the end, we will have a folder in the following structure.
+
+# Requirements
+## Input data
 
 The input is a folder with multiple speakers, for which there are one or several audio file. An audio file is made up of a sentence, spoke in Icelandic. To use this tool, the data has to be in this form :
 
 '''
+metadata.tsv
 data_folder/
 ├── id_user_1/
 │   ├── id_user_1-id_file_1.flac
@@ -27,7 +33,60 @@ data_folder/
 ├── ...
 '''
 
-Another file is required to use this tool : a metadata file, containing every information about the audio files. This file has to be 
+Another file is required to use this tool : a metadata file, containing the utterances said in the audio files. This file has to be in the shape of a table, so that python can read it as a Dataframe :
+
+'''
+    speaker_id             filename                                           sentence  ...    size user_agent status
+id                                                                                      ...                          
+2            1  000001-0000002.flac  Því sést hún oft á helgimyndum með augu sín á ...  ...  147918        NAN   test
+3            1  000001-0000003.flac        Bettý er sjöunda bók Arnaldar Indriðasonar.  ...  140238        NAN   test
+4            1  000001-0000004.flac  Afar hafa sitt eigið tungumál og sérstaka menn...  ...  147918        NAN   test
+6            2  000002-0000006.flac  Fyrsta fullorðinstönnin kemur við sex ára aldu...  ...  158456        NAN   test
+7            2  000002-0000007.flac      Landið var þá kallað „Sviss Mið-Austurlanda“.  ...  137976        NAN   test
+'''
+
+**IMPORTANT** : The data folder and the metadata file should be in the same folder, so that the program can read them.
+
+## JASON file
+
+All the information that can varies in the project are inside the info.json file :
+
+'''
+{
+    "path_to_data": "path/to/data/",
+    "output_folder": "output_test",
+    "data_folder": "data_test",
+    "empty_audio_user": "empty_data_test",
+    "audio_extension": "flac",
+    "lexicon_file": "lexicon.lex",
+    "dictionary_file": "icelandic.dict",
+    "MFA_model_name": "mfa_model",
+    "metadata_file": {
+        "name": "metadata.tsv",
+        "columns_utt_name": "sentence_norm",
+        "sep": "\t"
+    }
+}
+'''
+
+It is necessary to adapt the informations inside it as your case, in order for all the files to work. We will list here the elements included in the files, with a description of them.
+- **path_to_data** : the path to the input data (which contain the folder of audio files _and_ the metadata file;
+- **output_folder** : the name of the folder which will contain all the align and segmented files;
+- **data_folder** : the name of the folder containing the audio files;
+- **empty_audio_user** : the name of the folder which will eventually contain the audio files of the data that has not been segmented;
+- **audio_extension** : the extension of the audio files;
+- **lexicon_file** : the name of the file which will contain the lexicon of the input data;
+- **dictionary_file** : name of the file which will contain the lexicon plus the phonemes of each word;
+- **MFA_model_name*** : name of the model created by the MFA;
+- **metadata_file** :
+	- **name** : name of the metadata file;
+	- **columns_utt_name** : name of the columns that contains the **normalized** utterances of each audio files;
+	- **sep** : separator of the data.
+
+# Running
+
+
+
 
 # Table of Contents
 [Easy to use TOC generator](https://ecotrust-canada.github.io/markdown-toc/)
@@ -74,4 +133,4 @@ Explain how people can contribute to this repository. This can also link to a se
 # Papers/References (Optional)
 
 You would have a citation snippet here as a code block. For papers not yet accepted it is fine to mention you have submitted a paper to a particular conference and mention how you will reference it once has been accepted. For example you could add a citation or include the paper in the docs folder. 
-```
+``

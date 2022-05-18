@@ -8,7 +8,7 @@ NC='\033[0m'              # No Color
 
 # Getting the informations contained in info.json
 path_to_data="$(grep -o '"path_to_data": "[^"]*' info.json | grep -o '[^"]*$')"
-dict_file="$(grep -o '"dictionnary_file": "[^"]*' info.json | grep -o '[^"]*$')"
+dict_file="$(grep -o '"dictionary_file": "[^"]*' info.json | grep -o '[^"]*$')"
 lex_file="$(grep -o '"lexicon_file": "[^"]*' info.json | grep -o '[^"]*$')"
 model_file="$(grep -o '"MFA_model_name": "[^"]*' info.json | grep -o '[^"]*$')"
 model_path=$PWD"/"$model_file

@@ -5,7 +5,7 @@
     "empty_audio_user": "empty_data_test",
     "audio_extension": "flac",
     "lexicon_file": "lexicon.lex",
-    "dictionnary_file": "icelandic.dict",
+    "dictionary_file": "icelandic.dict",
     "MFA_model_name": "mfa_model",
     "metadata_file": {
         "name": "metadata.tsv",
