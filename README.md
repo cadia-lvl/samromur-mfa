@@ -109,13 +109,38 @@ Once you installed everything, and adapted the 'info.json' to your case, you can
 ./run.sh
 '''
 
+## Options
+### Overwrite
+
 After running the toolkit once, it is designed to use the file created. This means, if it recognize files such as dictionary or lexicon, it won't make it again. To overwrite these files, you can add the '-o' or '--overwrite' option in the end of the command :
 
 '''
 ./run.sh -o
 '''
 
-## Errors
+or 
+
+'''
+./run.sh --overwrite
+'''
+
+### Quiet
+
+To display less information; you can add '-q' or '--quiet' options after "./run.sh" :
+
+'''
+./run.sh -q
+'''
+
+or 
+
+'''
+./run.sh --quiet
+'''
+
+If you want the two options in the same time, you must put 'overwrite' before 'quiet'.
+
+## Errors handling
 
 The toolkit contain basic errors handling. Indeed, for each steps of the program, there is a corresponding '.log' file, located in the 'log' folder. 
 If an error occur during the run, the program will stop and a message will be displayed explaining where the error happened, and will ask to see the corresponding log file. 
