@@ -65,7 +65,7 @@ id                                                                              
 
 ## JSON file
 
-All the information that can varies in the project are inside the info.json file :
+All the information that can varies in the project are inside the `info.json` file :
 
 ```jsonc
 {
@@ -103,7 +103,7 @@ It is necessary to adapt the informations inside it as your case, in order for a
 # Run
 ## Making run
 
-Once you installed everything, and adapted the 'info.json' to your case, you can run the toolkit ! You simply need to write the folowing command on your terminal :
+Once you installed everything, and adapted the `info.json` to your case, you can run the toolkit ! You simply need to write the folowing command on your terminal :
 
 ```
 ./run.sh
@@ -112,7 +112,7 @@ Once you installed everything, and adapted the 'info.json' to your case, you can
 ## Options
 ### Overwrite
 
-After running the toolkit once, it is designed to use the file created. This means, if it recognize files such as dictionary or lexicon, it won't make it again. To overwrite these files, you can add the '-o' or '--overwrite' option in the end of the command :
+After running the toolkit once, it is designed to use the file created. This means, if it recognize files such as dictionary or lexicon, it won't make it again. To overwrite these files, you can add the `-o` or `--overwrite` option in the end of the command :
 
 ```
 ./run.sh -o
@@ -126,7 +126,7 @@ or
 
 ### Quiet
 
-To display less information; you can add '-q' or '--quiet' options after "./run.sh" :
+To display less information; you can add `-q` or `--quiet` options after `./run.sh` :
 
 ```
 ./run.sh -q
@@ -138,11 +138,11 @@ or
 ./run.sh --quiet
 ```
 
-If you want the two options in the same time, you must put 'overwrite' before 'quiet'.
+If you want the two options in the same time, you must put `overwrite` before `quiet`.
 
 ## Errors handling
 
-The toolkit contain basic errors handling. Indeed, for each steps of the program, there is a corresponding '.log' file, located in the 'logs' folder. 
+The toolkit contain basic errors handling. Indeed, for each steps of the program, there is a corresponding `.log` file, located in the `logs` folder. 
 If an error occur during the run, the program will stop and a message will be displayed explaining where the error happened, and will ask to see the corresponding log file. 
 
 ## Output
@@ -165,8 +165,7 @@ See the [LICENSE](LICENSE.txt)
 Reykjavik University
 
 Thomas Mestrou
-
-Main authors <thomasm@ru.is>
+<thomasm@ru.is>
 
 # Acknowledgements
 This project was funded by the Language Technology Programme for Icelandic 2019-2023. The programme, which is managed and coordinated by [Almannarómur](https://almannaromur.is/), is funded by the Icelandic Ministry of Education, Science and Culture.
@@ -231,7 +230,7 @@ alspeglun
 
 3. **Making the lexicon**
 
-The lexicon is a dictionary, with the phoneme traduction of each word. To do this, we use a g2p (grapheme-to-phoneme) converter, with a pre-trained model : 'ipd_clean_slt2018.mdl'. The result of it is the following :
+The lexicon is a dictionary, with the phoneme traduction of each word. To do this, we use a g2p (grapheme-to-phoneme) converter, with a pre-trained model : [ipd_clean_slt2018.mdl](ipd_clean_slt2018.mdl). The result of it is the following :
 
 ```
 augu    œyː ɣ ʏ
@@ -257,11 +256,11 @@ alspeglun   a l s p ei k l ʏ n
 
 4. **Validating the data**
 
-Before creating and training the acoustic model, we need to make sure all the data is ready for it. We then use the 'validate' command from mfa module to do it
+Before creating and training the acoustic model, we need to make sure all the data is ready for it. We then use the `validate` command from mfa module to do it
 
 5. **Creating and Training the acoustic model**
 
-Here we are ! Once every step we saw before has been done, we can finally create and train the acoustic model. This will create a '.zip' file, containing the model and a folder containing the segmentation of every audio file. This folder will be in ythe same shape as the input data folder :
+Here we are ! Once every step we saw before has been done, we can finally create and train the acoustic model. This will create a `.zip` file, containing the model and a folder containing the segmentation of every audio file. This folder will be in ythe same shape as the input data folder :
 
 ```
 output_folder/
