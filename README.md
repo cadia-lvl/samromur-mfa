@@ -159,7 +159,7 @@ At the end of the process - after the model has been created and trained - a pro
 If some folders are empty, a folder containing the speaker's audio files and a file with the id of the "missing speakers" will be created. The programm will ask the user if it should be corrected. If the user wants to correct it, then it will align the "missing data" using the model created before.
 
 # License
-See the [LICENSE](LICENSE)
+See the [LICENSE](LICENSE.txt)
 
 # Authors/Credit
 Reykjavik University
@@ -176,7 +176,7 @@ This project was funded by the Language Technology Programme for Icelandic 2019-
 
 The toolkit is globally divided in 6 sections. Each of them has a spceific role in a specific order.
 
-1. Preparing the folders
+1. **Preparing the folders**
 
 A condition of the Montreal Forced Alignment is, for each audio file, to have a text file having the utterance said in the corresponding audio file. Moreover, this .txt file has to be in the same place and to have the same name as the audio file. In the end, the 'data_folder' looks like this :
 
@@ -203,7 +203,7 @@ data_folder/
 ├── ...
 ```
 
-2. Making the lexicon
+2. **Making the lexicon**
 
 Another file needed for the MFA is the dictionary. But before that, we need to make a lexicon with every word said in the audio files. This is the role of this section. The program will take every utterances contained in the metadata file and will output a file under this format :
 
@@ -229,7 +229,7 @@ alspeglun
 ...
 ```
 
-3. Making the lexicon
+3. **Making the lexicon**
 
 The lexicon is a dictionary, with the phoneme traduction of each word. To do this, we use a g2p (grapheme-to-phoneme) converter, with a pre-trained model : 'ipd_clean_slt2018.mdl'. The result of it is the following :
 
@@ -255,11 +255,11 @@ alspeglun   a l s p ei k l ʏ n
 ...
 ```
 
-4. Validating the data
+4. **Validating the data**
 
 Before creating and training the acoustic model, we need to make sure all the data is ready for it. We then use the 'validate' command from mfa module to do it
 
-5. Creating and Training the acoustic model
+5. **Creating and Training the acoustic model**
 
 Here we are ! Once every step we saw before has been done, we can finally create and train the acoustic model. This will create a '.zip' file, containing the model and a folder containing the segmentation of every audio file. This folder will be in ythe same shape as the input data folder :
 
@@ -285,11 +285,12 @@ output_folder/
 │   ├── id_user_4-id_file_14.TextGrid
 │   └── id_user_4-id_file_15.TextGrid
 ├── ...
+...
 ```
 
-6. Segmentation checking 
+6. **Segmentation checking **
 
-See the [Segmentation checking section](##segmentation-checking)
+See the [Segmentation checking section](#segmentation-checking)
 
 
 
