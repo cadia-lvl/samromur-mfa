@@ -21,11 +21,19 @@ then
     mkdir 'log'
 fi
 
-# Initialize the option "overwrite"
+# Initialize the options "overwrite" and "quiet"
 ov=false
+qu=false
 if [ "$1" == "-o" ] || [ "$1" == "--overwrite" ]
 then
     ov=true
+    if [ "$2" == "-q" ] || [ "$2" == "--quiet" ]
+    then
+        qu=true
+    fi
+elif [ "$1" == "-q" ] || [ "$1" == "--quiet" ]
+then
+    qu=true
 fi
 
 
@@ -55,8 +63,13 @@ if [ $ov == false ] && [ -f $lex_file ]
 then
     printf " ${Yellow}NOTHING DONE${NC} : %s already existing.\n " "$lex_file"
 else
-    # We call the make_lexicon.py program, using the informations in the info.json file and putting the errors messages in lex.log file located in log folder.
-    python3 make_lexicon.py info.json 2> log/lex.log
+    if $qu
+    then
+        # We call the make_lexicon.py program, using the informations in the info.json file and putting the errors messages in lex.log file located in log folder.
+        python3 make_lexicon.py info.json 2> log/lex.log
+    else
+        python3 make_lexicon.py info.json >> log/lex.log
+    fi
 
     if [ "${?}" -eq 1 ] 
     then
@@ -96,7 +109,12 @@ fi
 
 echo '========== Validating the data =========='
 
-mfa validate "$path_to_data""$data_folder" "$dict_file" 2> log/val.log
+if $qu
+then
+    mfa validate --quiet "$path_to_data""$data_folder" "$dict_file" 2> log/val.log
+else
+    mfa validate "$path_to_data""$data_folder" "$dict_file" 2> log/val.log
+fi
 
 if [ "${?}" -eq 1 ] 
 then
@@ -116,7 +134,12 @@ then
     printf " ${Yellow}NOTHING DONE${NC} : %s already created.\n " "$model_file"
 
 else
-    mfa train --output_model_path "$model_path" --clean --overwrite "$path_to_data""$data_folder" "$dict_file" "$output_folder" 2> log/train.log
+    if $qu
+    then
+        mfa train --output_model_path "$model_path" --quiet --clean --overwrite "$path_to_data""$data_folder" "$dict_file" "$output_folder" 2> log/train.log
+    else
+        mfa train --output_model_path "$model_path" --clean --overwrite "$path_to_data""$data_folder" "$dict_file" "$output_folder" 2> log/train.log
+    fi
 
     if [ "${?}" -eq 1 ] 
     then
