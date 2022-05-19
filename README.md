@@ -24,7 +24,7 @@ The purpose of this tool is to automatically generate an acoustic model for the 
 
 The input is a folder with multiple speakers, for which there are one or several audio file. An audio file is made up of a sentence, spoke in Icelandic. To use this tool, the data has to be in this form :
 
-'''
+```
 metadata.tsv
 data_folder/
 ├── id_user_1/
@@ -47,11 +47,11 @@ data_folder/
 │   ├── id_user_4-id_file_14.flac
 │   └── id_user_4-id_file_15.flac
 ├── ...
-'''
+```
 
 Another file is required to use this tool : a metadata file, containing the utterances said in the audio files. This file has to be in the shape of a table, so that python can read it as a Dataframe :
 
-'''
+```
     speaker_id             filename                                           sentence  ...    size user_agent status
 id                                                                                      ...                          
 2            1  000001-0000002.flac  Því sést hún oft á helgimyndum með augu sín á ...  ...  147918        NAN   test
@@ -59,7 +59,7 @@ id                                                                              
 4            1  000001-0000004.flac  Afar hafa sitt eigið tungumál og sérstaka menn...  ...  147918        NAN   test
 6            2  000002-0000006.flac  Fyrsta fullorðinstönnin kemur við sex ára aldu...  ...  158456        NAN   test
 7            2  000002-0000007.flac      Landið var þá kallað „Sviss Mið-Austurlanda“.  ...  137976        NAN   test
-'''
+```
 
 **IMPORTANT** : The data folder and the metadata file should be in the same folder, so that the program can read them.
 
@@ -67,7 +67,7 @@ id                                                                              
 
 All the information that can varies in the project are inside the info.json file :
 
-'''jsonc
+```jsonc
 {
     "path_to_data": "path/to/data/",
     "output_folder": "output_test",
@@ -83,7 +83,7 @@ All the information that can varies in the project are inside the info.json file
         "sep": "\t"
     }
 }
-'''
+```
 
 It is necessary to adapt the informations inside it as your case, in order for all the files to work. We will list here the elements included in the files, with a description of them.
 - **path_to_data** : the path to the input data (which contain the folder of audio files _and_ the metadata file;
@@ -95,9 +95,9 @@ It is necessary to adapt the informations inside it as your case, in order for a
 - **dictionary_file** : name of the file which will contain the lexicon plus the phonemes of each word;
 - **MFA_model_name*** : name of the model created by the MFA;
 - **metadata_file** :
-	- **name** : name of the metadata file;
-	- **columns_utt_name** : name of the columns that contains the **normalized** utterances of each audio files;
-	- **sep** : separator of the data.
+    - **name** : name of the metadata file;
+    - **columns_utt_name** : name of the columns that contains the **normalized** utterances of each audio files;
+    - **sep** : separator of the data.
 
 
 # Run
@@ -105,38 +105,38 @@ It is necessary to adapt the informations inside it as your case, in order for a
 
 Once you installed everything, and adapted the 'info.json' to your case, you can run the toolkit ! You simply need to write the folowing command on your terminal :
 
-'''
+```
 ./run.sh
-'''
+```
 
 ## Options
 ### Overwrite
 
 After running the toolkit once, it is designed to use the file created. This means, if it recognize files such as dictionary or lexicon, it won't make it again. To overwrite these files, you can add the '-o' or '--overwrite' option in the end of the command :
 
-'''
+```
 ./run.sh -o
-'''
+```
 
 or 
 
-'''
+```
 ./run.sh --overwrite
-'''
+```
 
 ### Quiet
 
 To display less information; you can add '-q' or '--quiet' options after "./run.sh" :
 
-'''
+```
 ./run.sh -q
-'''
+```
 
 or 
 
-'''
+```
 ./run.sh --quiet
-'''
+```
 
 If you want the two options in the same time, you must put 'overwrite' before 'quiet'.
 
@@ -180,7 +180,7 @@ The toolkit is globally divided in 6 sections. Each of them has a spceific role 
 
 A condition of the Montreal Forced Alignment is, for each audio file, to have a text file having the utterance said in the corresponding audio file. Moreover, this .txt file has to be in the same place and to have the same name as the audio file. In the end, the 'data_folder' looks like this :
 
-'''
+```
 data_folder/
 ├── id_user_1/
 │   ├── id_user_1-id_file_1.flac
@@ -201,13 +201,13 @@ data_folder/
 │   ├── id_user_2-id_file_8.flac
 │   └── id_user_2-id_file_8.txt
 ├── ...
-'''
+```
 
 2. Making the lexicon
 
 Another file needed for the MFA is the dictionary. But before that, we need to make a lexicon with every word said in the audio files. This is the role of this section. The program will take every utterances contained in the metadata file and will output a file under this format :
 
-'''
+```
 augu
 arnaldar
 afar
@@ -227,13 +227,13 @@ alls
 allar
 alspeglun
 ...
-'''
+```
 
 3. Making the lexicon
 
 The lexicon is a dictionary, with the phoneme traduction of each word. To do this, we use a g2p (grapheme-to-phoneme) converter, with a pre-trained model : 'ipd_clean_slt2018.mdl'. The result of it is the following :
 
-'''
+```
 augu    œyː ɣ ʏ
 arnaldar    a r t n a l t a r
 afar    aː v a r
@@ -253,7 +253,7 @@ alls    a l s
 allar   a t l a r
 alspeglun   a l s p ei k l ʏ n
 ...
-'''
+```
 
 4. Validating the data
 
@@ -263,6 +263,7 @@ Before creating and training the acoustic model, we need to make sure all the da
 
 Here we are ! Once every step we saw before has been done, we can finally create and train the acoustic model. This will create a '.zip' file, containing the model and a folder containing the segmentation of every audio file. This folder will be in ythe same shape as the input data folder :
 
+```
 output_folder/
 ├── id_user_1/
 │   ├── id_user_1-id_file_1.TextGrid
@@ -284,7 +285,7 @@ output_folder/
 │   ├── id_user_4-id_file_14.TextGrid
 │   └── id_user_4-id_file_15.TextGrid
 ├── ...
-'''
+```
 
 6. Segmentation checking 
 
