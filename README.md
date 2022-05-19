@@ -8,7 +8,7 @@ The purpose of this tool is to automatically generate an acoustic model for the 
 - [Table of Contents](#table-of-contents)
 - [Requirements](#requirements)
   * [Input data](#input-data)
-  * [JASON file](#jason-file)
+  * [JSON file](#json-file)
 - [Run](#run)
   * [Making run](#making-run)
   * [Errors](#errors)
@@ -63,7 +63,7 @@ id                                                                              
 
 **IMPORTANT** : The data folder and the metadata file should be in the same folder, so that the program can read them.
 
-## JASON file
+## JSON file
 
 All the information that can varies in the project are inside the info.json file :
 
@@ -142,7 +142,7 @@ If you want the two options in the same time, you must put 'overwrite' before 'q
 
 ## Errors handling
 
-The toolkit contain basic errors handling. Indeed, for each steps of the program, there is a corresponding '.log' file, located in the 'log' folder. 
+The toolkit contain basic errors handling. Indeed, for each steps of the program, there is a corresponding '.log' file, located in the 'logs' folder. 
 If an error occur during the run, the program will stop and a message will be displayed explaining where the error happened, and will ask to see the corresponding log file. 
 
 ## Output
@@ -170,6 +170,7 @@ Main authors <thomasm@ru.is>
 
 # Acknowledgements
 This project was funded by the Language Technology Programme for Icelandic 2019-2023. The programme, which is managed and coordinated by [Almannarómur](https://almannaromur.is/), is funded by the Icelandic Ministry of Education, Science and Culture.
+
 
 # Explanation of the toolkit
 
