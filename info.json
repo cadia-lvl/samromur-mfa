@@ -1,15 +1,15 @@
 {
-    "path_to_data": "../samromur_21.05_v2/path/to/",
-    "output_folder": "output_test",
-    "data_folder": "data_test",
+    "path_to_data": "~/samromur_21.05_test_v2/",
+    "data_folder": "data",
+    "metadata_file": {
+        "name": "metadata.tsv",
+        "columns_utt_name": "sentence_norm",
+        "sep": "\t"
+    },
     "empty_audio_user": "empty_data_test",
     "audio_extension": "flac",
     "lexicon_file": "lexicon.lex",
     "dictionary_file": "icelandic.dict",
     "MFA_model_name": "mfa_model",
-    "metadata_file": {
-        "name": "metadata.tsv",
-        "columns_utt_name": "sentence_norm",
-        "sep": "\t"
-    }
+    "output_folder": "output_test"
 }
