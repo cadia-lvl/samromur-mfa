@@ -21,22 +21,36 @@ then
     mkdir 'log'
 fi
 
-# Initialize the options "overwrite" and "quiet"
+# Initialize the options "overwrite", "quiet" and "model"
 ov=false
 qu=false
-if [ "$1" == "-o" ] || [ "$1" == "--overwrite" ]
-then
-    ov=true
-    if [ "$2" == "-q" ] || [ "$2" == "--quiet" ]
-    then
-        qu=true
-    fi
-elif [ "$1" == "-q" ] || [ "$1" == "--quiet" ]
-then
-    qu=true
-fi
+mo=false
 
+while [ ! -z "$1" ]
+do
+    case $1 in
+        -o|--overwrite)
+            ov=true
+            ;;
+        -q|--quiet)
+            qu=true
+            ;;
+        -m|--model)
+            mo=true
+            shift
+            if [ -f "$1" ]
+            then
+                model_path=$1
+            else 
+                printf "${Red}FAILURE${NC} : The model path has not been initialized.\n"
+                exit 1
+            fi
+            ;;
+    esac
+shift
+done
 
+exit 0
 
 echo '========== Preparing folders =========='
 # We call the folder_prep.py program, using the informations in the info.json file and putting the errors messages in prep.log file located in log folder.
