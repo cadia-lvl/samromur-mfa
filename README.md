@@ -1,7 +1,12 @@
 # Preparation for Montreal Forced Alignment with Samromur dataset
-This tool is to align and segmentate a dataset of audio files to prepare it for Kaldi using Montreal Forced Alignment (MFA). 
+This tool is to align and segmentate a dataset of audio files to prepare it for Kaldi ASR using Montreal Forced Alignment (MFA). 
 
-The purpose of this tool is to automatically generate an acoustic model for the data and all the files required from audio files and the metadata. In the end, we will have a folder in the following structure.
+The purpose of this tool is to automatically generate aligned files using only the audio and metadata files. 
+To make this, the toolkit can :
+- create and use an acoustic model (using all the data) to align the data ; or
+- use a pre-existing acoustic model to align the data.
+This tool have others features : it will create and save a lexicon and a dictionary of all the words inside the dataset, checks if the alignment has been correctly done for all the folders and proposes different options to the user.
+
 
 # Table of Contents
 - [Preparation for Montreal Forced Alignment with Samromur dataset](#preparation-for-montreal-forced-alignment-with-samromur-dataset)
@@ -11,8 +16,12 @@ The purpose of this tool is to automatically generate an acoustic model for the 
   * [JSON file](#json-file)
 - [Run](#run)
   * [Making run](#making-run)
-  * [Errors](#errors)
+  * [Options](#options)
+    + [Overwrite](#overwrite)
+    + [Quiet](#quiet)
+    + [Acoustic model](#acoustic-model)
   * [Output](#output)
+  * [Errors handling](#errors-handling)
   * [Segmentation checking](#segmentation-checking)
 - [License](#license)
 - [Authors/Credit](#authors-credit)
@@ -20,33 +29,47 @@ The purpose of this tool is to automatically generate an acoustic model for the 
 - [Explanation of the toolkit](#explanation-of-the-toolkit)
 
 # Requirements
+
+A requirements file has been provided for your convenience and the project is setup as an installable module. You can chose to either
+
+install the module
+
+```python
+python setup.py install
+```
+
+Which will install the requirements as well.
+
+Or install the requirements
+
+```python
+pip install -r requirements.txt
+```
+
+You also have to make sure the g2p converter (https://www-i6.informatik.rwth-aachen.de/web/Software/g2p.html) and Montreal Forced Aligner (https://montreal-forced-aligner.readthedocs.io/en/latest/getting_started.html) are installed ! 
+
 ## Input data
 
 The input is a folder with multiple speakers, for which there are one or several audio file. An audio file is made up of a sentence, spoke in Icelandic. To use this tool, the data has to be in this form :
 
 ```
-metadata.tsv
+metadata_file.tsv
 data_folder/
-├── id_user_1/
-│   ├── id_user_1-id_file_1.flac
-│   ├── id_user_1-id_file_2.flac
-│   └── id_user_1-id_file_3.flac
-├── id_user_2/
-│   ├── id_user_2-id_file_4.flac
-│   ├── id_user_2-id_file_5.flac
-│   ├── id_user_2-id_file_6.flac
-│   ├── id_user_2-id_file_7.flac
-│   └── id_user_2-id_file_8.flac
-├── id_user_3/
-│   ├── id_user_3-id_file_9.flac
-│   └── id_user_3-id_file_10.flac
-├── id_user_4/
-│   ├── id_user_4-id_file_11.flac
-│   ├── id_user_4-id_file_12.flac
-│   ├── id_user_4-id_file_13.flac
-│   ├── id_user_4-id_file_14.flac
-│   └── id_user_4-id_file_15.flac
+├── id_speaker_1/
+│   ├── id_speaker_1-id_file_1.flac
+│   ├── id_speaker_1-id_file_2.flac
+│   └── id_speaker_1-id_file_3.flac
+├── id_speaker_2/
+│   ├── id_speaker_2-id_file_4.flac
+│   ├── id_speaker_2-id_file_5.flac
+│   ├── id_speaker_2-id_file_6.flac
+│   ├── id_speaker_2-id_file_7.flac
+│   └── id_speaker_2-id_file_8.flac
+├── id_speaker_3/
+│   ├── id_speaker_3-id_file_9.flac
+│   └── id_speaker_3-id_file_10.flac
 ├── ...
+...
 ```
 
 Another file is required to use this tool : a metadata file, containing the utterances said in the audio files. This file has to be in the shape of a table, so that python can read it as a Dataframe :
@@ -61,7 +84,7 @@ id                                                                              
 7            2  000002-0000007.flac      Landið var þá kallað „Sviss Mið-Austurlanda“.  ...  137976        NAN   test
 ```
 
-**IMPORTANT** : The data folder and the metadata file should be in the same folder, so that the program can read them.
+**IMPORTANT** : The data folder and the metadata file should be in the same folder, so that the tool can read them.
 
 ## JSON file
 
@@ -70,35 +93,35 @@ All the information that can varies in the project are inside the `info.json` fi
 ```jsonc
 {
     "path_to_data": "path/to/data/",
-    "output_folder": "output_test",
-    "data_folder": "data_test",
-    "empty_audio_user": "empty_data_test",
-    "audio_extension": "flac",
-    "lexicon_file": "lexicon.lex",
-    "dictionary_file": "icelandic.dict",
-    "MFA_model_name": "mfa_model",
+    "data_folder": "data",
     "metadata_file": {
         "name": "metadata.tsv",
         "columns_utt_name": "sentence_norm",
         "sep": "\t"
-    }
+    },
+    "empty_audio_user": "empty_data",
+    "audio_extension": "flac",
+    "lexicon_file": "lexicon.lex",
+    "dictionary_file": "icelandic.dict",
+    "MFA_model_name": "mfa_model",
+    "output_folder": "output"
 }
 ```
 
-It is necessary to adapt the informations inside it as your case, in order for all the files to work. We will list here the elements included in the files, with a description of them.
-- **path_to_data** : the path to the input data (which contain the folder of audio files _and_ the metadata file;
-- **output_folder** : the name of the folder which will contain all the align and segmented files;
-- **data_folder** : the name of the folder containing the audio files;
-- **empty_audio_user** : the name of the folder which will eventually contain the audio files of the data that has not been segmented;
-- **audio_extension** : the extension of the audio files;
-- **lexicon_file** : the name of the file which will contain the lexicon of the input data;
-- **dictionary_file** : name of the file which will contain the lexicon plus the phonemes of each word;
-- **MFA_model_name*** : name of the model created by the MFA;
-- **metadata_file** :
-    - **name** : name of the metadata file;
-    - **columns_utt_name** : name of the columns that contains the **normalized** utterances of each audio files;
-    - **sep** : separator of the data.
+In order for the tool to work, it is necessary to adapt all the informations inside it depending on your case. We will list here the elements included in the files, with a brief description of them.
 
+- **path_to_data** : the path to the input data (which contain the folder of audio files _and_ the metadata file). Be careful of putting the `/` in the end, so the tool recognise it ;
+- **data_folder** : the name of the folder containing the audio files ;
+- **metadata_file** :
+    - **name** : name of the metadata file ;
+    - **columns_utt_name** : name of the columns that contains the **normalized** utterances of each audio files ;
+    - **sep** : separator of the data.
+- **empty_audio_user** : the name of the folder which will eventually contain the audio files of the data that has not been segmented ;
+- **audio_extension** : the extension of the audio files ;
+- **lexicon_file** : the name of the file which will contain the lexicon of the input data ;
+- **dictionary_file** : name of the file which will contain the lexicon plus the phonemes of each word ;
+- **MFA_model_name*** : name of the model created by the MFA ;
+- **output_folder** : the name of the folder which will contain all files created by the tool.
 
 # Run
 ## Making run
@@ -109,10 +132,12 @@ Once you installed everything, and adapted the `info.json` to your case, you can
 ./run.sh
 ```
 
+If you are using terra, you can also use the pre-existing `run.sbatch` file (you will most likely need to change the informations inside it as well).
+
 ## Options
 ### Overwrite
 
-After running the toolkit once, it is designed to use the file created. This means, if it recognize files such as dictionary or lexicon, it won't make it again. To overwrite these files, you can add the `-o` or `--overwrite` option in the end of the command :
+After running the toolkit once, the tool is designed to use the file created. This means, if it recognize files such as dictionary or lexicon, it will not make them again. To overwrite these files, you can add the `-o` or `--overwrite` option in the end of the command :
 
 ```
 ./run.sh -o
@@ -126,7 +151,7 @@ or
 
 ### Quiet
 
-To display less information; you can add `-q` or `--quiet` options after `./run.sh` :
+To display less information, you can add `-q` or `--quiet` options after `./run.sh` :
 
 ```
 ./run.sh -q
@@ -138,20 +163,34 @@ or
 ./run.sh --quiet
 ```
 
-If you want the two options in the same time, you must put `overwrite` before `quiet`.
+### Acoustic model
 
-## Errors handling
+If you want to use a pre-existing model to align your audio files, you can put add `-m` or `--model` option followed by the path and name of the `.zip` model name. For example :
 
-The toolkit contain basic errors handling. Indeed, for each steps of the program, there is a corresponding `.log` file, located in the `logs` folder. 
-If an error occur during the run, the program will stop and a message will be displayed explaining where the error happened, and will ask to see the corresponding log file. 
+```
+./run.sh -m path/to/model/model.zip
+```
+
+or 
+
+```
+./run.sh --model path/to/model/model.zip
+```
 
 ## Output
 
-If the toolkit run successfully, it will create the following files :
+All the files created will be located in the `output_folder` folder. You will find the following files :
 - lexicon
 - dictionary
 - acoustic model (.zip file)
-and a folder containing the TextGrid files of each audio file.
+and the following folders :
+- log : contain the log files
+- out : contain the aligned files 
+
+## Errors handling
+
+The toolkit contain basic errors handling. Indeed, for each steps of the program, there is a corresponding `.log` file, located in the `log` folder. 
+If an error occur during the run, the program will stop and a message will be displayed explaining where the error happened, and will ask to see the corresponding log file. 
 
 ## Segmentation checking
 
@@ -181,25 +220,31 @@ A condition of the Montreal Forced Alignment is, for each audio file, to have a 
 
 ```
 data_folder/
-├── id_user_1/
-│   ├── id_user_1-id_file_1.flac
-│   ├── id_user_1-id_file_1.txt
-│   ├── id_user_1-id_file_2.flac
-│   ├── id_user_1-id_file_2.txt
-│   ├── id_user_1-id_file_3.flac
-│   └── id_user_1-id_file_3.txt
-├── id_user_2/
-│   ├── id_user_2-id_file_4.flac
-│   ├── id_user_2-id_file_4.txt
-│   ├── id_user_2-id_file_5.flac
-│   ├── id_user_2-id_file_5.txt
-│   ├── id_user_2-id_file_6.flac
-│   ├── id_user_2-id_file_6.txt
-│   ├── id_user_2-id_file_7.flac
-│   ├── id_user_2-id_file_7.txt
-│   ├── id_user_2-id_file_8.flac
-│   └── id_user_2-id_file_8.txt
+├── id_speaker_1/
+│   ├── id_speaker_1-id_file_1.flac
+│   ├── id_speaker_1-id_file_1.txt
+│   ├── id_speaker_1-id_file_2.flac
+│   ├── id_speaker_1-id_file_2.txt
+│   ├── id_speaker_1-id_file_3.flac
+│   └── id_speaker_1-id_file_3.txt
+├── id_speaker_2/
+│   ├── id_speaker_2-id_file_4.flac
+│   ├── id_speaker_2-id_file_4.txt
+│   ├── id_speaker_2-id_file_5.flac
+│   ├── id_speaker_2-id_file_5.txt
+│   ├── id_speaker_2-id_file_6.flac
+│   ├── id_speaker_2-id_file_6.txt
+│   ├── id_speaker_2-id_file_7.flac
+│   ├── id_speaker_2-id_file_7.txt
+│   ├── id_speaker_2-id_file_8.flac
+│   └── id_speaker_2-id_file_8.txt
+├── id_speaker_3/
+│   ├── id_speaker_3-id_file_9.flac
+│   ├── id_speaker_3-id_file_9.txt
+│   ├── id_speaker_3-id_file_10.flac
+│   └── id_speaker_3-id_file_10.txt
 ├── ...
+...
 ```
 
 2. **Making the lexicon**
@@ -264,30 +309,24 @@ Here we are ! Once every step we saw before has been done, we can finally create
 
 ```
 output_folder/
-├── id_user_1/
-│   ├── id_user_1-id_file_1.TextGrid
-│   ├── id_user_1-id_file_2.TextGrid
-│   └── id_user_1-id_file_3.TextGrid
-├── id_user_2/
-│   ├── id_user_2-id_file_4.TextGrid
-│   ├── id_user_2-id_file_5.TextGrid
-│   ├── id_user_2-id_file_6.TextGrid
-│   ├── id_user_2-id_file_7.TextGrid
-│   └── id_user_2-id_file_8.TextGrid
-├── id_user_3/
-│   ├── id_user_3-id_file_9.TextGrid
-│   └── id_user_3-id_file_10.TextGrid
-├── id_user_4/
-│   ├── id_user_4-id_file_11.TextGrid
-│   ├── id_user_4-id_file_12.TextGrid
-│   ├── id_user_4-id_file_13.TextGrid
-│   ├── id_user_4-id_file_14.TextGrid
-│   └── id_user_4-id_file_15.TextGrid
+├── id_speaker_1/
+│   ├── id_speaker_1-id_file_1.TextGrid
+│   ├── id_speaker_1-id_file_2.TextGrid
+│   └── id_speaker_1-id_file_3.TextGrid
+├── id_speaker_2/
+│   ├── id_speaker_2-id_file_4.TextGrid
+│   ├── id_speaker_2-id_file_5.TextGrid
+│   ├── id_speaker_2-id_file_6.TextGrid
+│   ├── id_speaker_2-id_file_7.TextGrid
+│   └── id_speaker_2-id_file_8.TextGrid
+├── id_speaker_3/
+│   ├── id_speaker_3-id_file_9.TextGrid
+│   └── id_speaker_3-id_file_10.TextGrid
 ├── ...
 ...
 ```
 
-6. **Segmentation checking **
+6. **Segmentation checking**
 
 See the [Segmentation checking section](#segmentation-checking)
 
