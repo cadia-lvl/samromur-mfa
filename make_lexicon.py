@@ -7,7 +7,7 @@ with open(sys.argv[1]) as fichierOptions:
     options = json.load(fichierOptions)
 
 # Retrieval of the infos of all the individuals, which is put in argument.
-df_meta = pd.read_csv(options['path_to_data'] + options['metadata_file']['name'], options['metadata_file']['sep'], index_col=0, low_memory=False)
+df_meta = pd.read_csv(filepath_or_buffer = options['path_to_data'] + options['metadata_file']['name'], sep = options['metadata_file']['sep'], index_col=0, low_memory=False)
 
 # Creating a dictionnary which will contain a list of all the words beginning by the letter in index.
 word_dict = {"a" : [],"á" : [],"b" : [], "c" : [],"d" : [],"ð" : [],"e" : [],"é" : [],"f" : [],"g" : [],"h" : [],"i" : [],"í" : [],"j" : [],"k" : [],"l" : [],"m" : [],"n" : [],"o" : [],"ó" : [],"p" : [], "q" : [],"r" : [],"s" : [],"t" : [],"u" : [],"ú" : [],"v" : [], "w" : [],"x" : [],"y" : [],"ý" : [], "z" : [],"þ" : [],"æ" : [],"ö" : []}
@@ -29,7 +29,7 @@ with alive_bar(bar='blocks') as bar :
                 bar()
 
 # Creating a file that will contain all the words
-f = open(options['lexicon_file'], "w")
+f = open(options['output_folder'] + "/" + options['lexicon_file'], "w")
 
 # Inserting every word in the file
 for i in word_dict :

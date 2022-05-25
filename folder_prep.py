@@ -11,7 +11,7 @@ except:
 
     
 try:
-    df_meta = pd.read_csv(options['path_to_data'] + options['metadata_file']['name'], sep=options['metadata_file']['sep'], index_col=0, low_memory=False)
+    df_meta = pd.read_csv(filepath_or_buffer = options['path_to_data'] + options['metadata_file']['name'], sep = options['metadata_file']['sep'], index_col=0, low_memory=False)
     # Retrieval of the infos of all the individuals, which is put in argument.
 except:
     raise NameError("Name of the metadata file is incorrect. Try changing it in the info.json program, line 4.")

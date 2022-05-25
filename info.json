@@ -1,5 +1,5 @@
 {
-    "path_to_data": "~/samromur_21.05_test_v2/",
+    "path_to_data": "/Users/Thomas/samromur_21.05_test_v2/",
     "data_folder": "data",
     "metadata_file": {
         "name": "metadata.tsv",
