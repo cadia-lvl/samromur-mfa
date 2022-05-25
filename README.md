@@ -28,6 +28,7 @@ This tool have others features : it will create and save a lexicon and a diction
 - [Acknowledgements](#acknowledgements)
 - [Explanation of the toolkit](#explanation-of-the-toolkit)
 
+
 # Requirements
 
 A requirements file has been provided for your convenience and the project is setup as an installable module. You can chose to either
@@ -50,7 +51,7 @@ You also have to make sure the g2p converter (https://www-i6.informatik.rwth-aac
 
 ## Input data
 
-The input is a folder with multiple speakers, for which there are one or several audio file. An audio file is made up of a sentence, spoke in Icelandic. To use this tool, the data has to be in this form :
+The input is a folder with multiple speakers, for which there are one or several audio file. An audio file is made up of a sentence, spoken in Icelandic. To use this tool, the data has to be in this form :
 
 ```
 metadata_file.tsv
@@ -72,7 +73,7 @@ data_folder/
 ...
 ```
 
-Another file is required to use this tool : a metadata file, containing the utterances said in the audio files. This file has to be in the shape of a table, so that python can read it as a Dataframe :
+Another file is required : a metadata file, containing the utterances said in the audio files. It has to be in the shape of a table, so that Python can read it as a Dataframe :
 
 ```
     speaker_id             filename                                           sentence  ...    size user_agent status
@@ -108,20 +109,21 @@ All the information that can varies in the project are inside the `info.json` fi
 }
 ```
 
-In order for the tool to work, it is necessary to adapt all the informations inside it depending on your case. We will list here the elements included in the files, with a brief description of them.
+In order for the tool to work, it is necessary to adapt all the informations inside it depending on your case. We will list here these elements, with a brief description of them.
 
-- **path_to_data** : the path to the input data (which contain the folder of audio files _and_ the metadata file). Be careful of putting the `/` in the end, so the tool recognise it ;
+- **path_to_data** : the path to the input data (which contain the folder of audio files _and_ the metadata file). Be careful of putting the `/` in the end, so the tool recognize it ;
 - **data_folder** : the name of the folder containing the audio files ;
 - **metadata_file** :
     - **name** : name of the metadata file ;
     - **columns_utt_name** : name of the columns that contains the **normalized** utterances of each audio files ;
     - **sep** : separator of the data.
-- **empty_audio_user** : the name of the folder which will eventually contain the audio files of the data that has not been segmented ;
+- **empty_audio_user** : the name of the folder which will eventually contain the audio files of the data that has not been aligned ;
 - **audio_extension** : the extension of the audio files ;
 - **lexicon_file** : the name of the file which will contain the lexicon of the input data ;
 - **dictionary_file** : name of the file which will contain the lexicon plus the phonemes of each word ;
 - **MFA_model_name*** : name of the model created by the MFA ;
 - **output_folder** : the name of the folder which will contain all files created by the tool.
+
 
 # Run
 ## Making run
@@ -165,7 +167,7 @@ or
 
 ### Acoustic model
 
-If you want to use a pre-existing model to align your audio files, you can put add `-m` or `--model` option followed by the path and name of the `.zip` model name. For example :
+If you want to use a pre-existing acoustic model to align your audio files, you can put add `-m` or `--model` option followed by the path and name of the `.zip` model name. For example :
 
 ```
 ./run.sh -m path/to/model/model.zip
@@ -194,17 +196,20 @@ If an error occur during the run, the program will stop and a message will be di
 
 ## Segmentation checking
 
-At the end of the process - after the model has been created and trained - a program will check if the segmentation has been a success for every speaker's audio file and will display the percentage of folders having an error.
+At the end of the process - after the files had been align - a program will check if the segmentation had been a success for every speaker's audio file and will display the percentage of folders having an error.
 If some folders are empty, a folder containing the speaker's audio files and a file with the id of the "missing speakers" will be created. The programm will ask the user if it should be corrected. If the user wants to correct it, then it will align the "missing data" using the model created before.
+
 
 # License
 See the [LICENSE](LICENSE.txt)
+
 
 # Authors/Credit
 Reykjavik University
 
 Thomas Mestrou
 <thomasm@ru.is>
+
 
 # Acknowledgements
 This project was funded by the Language Technology Programme for Icelandic 2019-2023. The programme, which is managed and coordinated by [Almannarómur](https://almannaromur.is/), is funded by the Icelandic Ministry of Education, Science and Culture.
@@ -249,7 +254,7 @@ data_folder/
 
 2. **Making the lexicon**
 
-Another file needed for the MFA is the dictionary. But before that, we need to make a lexicon with every word said in the audio files. This is the role of this section. The program will take every utterances contained in the metadata file and will output a file under this format :
+Another file needed for the MFA is the dictionary. But before that, we need to make a lexicon containing every word said in the audio files. This is the role of this section. The program will take every utterances contained in the metadata file and will output a file under this format :
 
 ```
 augu
@@ -301,11 +306,15 @@ alspeglun   a l s p ei k l ʏ n
 
 4. **Validating the data**
 
-Before creating and training the acoustic model, we need to make sure all the data is ready for it. We then use the `validate` command from mfa module to do it
+Before creating and training the acoustic model, we need to make sure all the data is ready for it. We then use the `validate` command from MFA module to do it.
+
+5. **Aligning the audio files with pre-existing acoustic model**
+
+If the user wants to align the audio data using a pre-existing audio file, this tool will only align the data using the `align` command from MFA.
 
 5. **Creating and Training the acoustic model**
 
-Here we are ! Once every step we saw before has been done, we can finally create and train the acoustic model. This will create a `.zip` file, containing the model and a folder containing the segmentation of every audio file. This folder will be in ythe same shape as the input data folder :
+If the user wants to create and train a whol new model, this tool will do so. Once every step we saw before has been done, we can finally create and train the acoustic model. This will create a `.zip` file, containing the model and a folder containing the segmentation of every audio file. This folder will be in ythe same shape as the input data folder :
 
 ```
 output_folder/
