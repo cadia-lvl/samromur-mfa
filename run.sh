@@ -34,15 +34,22 @@ ov=false
 qu=false
 mo=false
 
+# We get all the options the users wrote. 
 while [ ! -z "$1" ]
 do
     case $1 in
+        # If the user wrote '-o' or '--overwrite', the the 'ov' variable will be changed to 'true'
+        # This option means the user wants to overwrite on existing files
         -o|--overwrite)
             ov=true
             ;;
+        # If the user wrote '-q' or '--quiet', the the 'qu' variable will be changed to 'true'
+        # This option means the user wants the tool to display the less things possible 
         -q|--quiet)
             qu=true
             ;;
+        # If the user wrote '-m' or '--model', the the 'mo' variable will be changed to 'true'``
+        # This option, which should be followed by the path of an acoustic model, will use the model to align files
         -m|--model)
             mo=true
             shift
@@ -142,6 +149,7 @@ fi
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
+# If the user want to use a pre-existing model, it will then use this model to align the files of the dataset.
 if $mo
 then
     echo '========== Align the files using the model =========='
@@ -161,6 +169,7 @@ then
         printf "${Green}SUCCESS${NC} : Alignment finished. \n"
     fi     
 
+# If the user wants to create a new model, it will do so and use this model to align the files of the dataset.
 else 
 
     echo '========== Creating and Training the MFA model =========='
@@ -196,6 +205,8 @@ fi
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
+# Ths program will check if the alignment has been done for all the files. If not, it will put all the non-aligned files in a separate folder.
+# It will always display the percentage of missing folders
 echo '========== Checking =========='   
 python3 segmentation_check.py info.json 2> "$log"/check.log
 
