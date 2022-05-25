@@ -2,31 +2,34 @@ import os, sys, json
 import pandas as pd
 from alive_progress import alive_bar
 
+# As this python file will be the first one to run, we check if all the informations put in the info.json file are good
+
+
+# Import all the informations of the names of the files from the 'info.json' file
 try:
     with open(sys.argv[1]) as fichierOptions:
         options = json.load(fichierOptions)
-    # Import all the informations of the names of the files from the 'info.json' file
 except:
     raise NameError("The .json file is missing or the name is incorrect. Try changing it in the run.sh program, line 6.")
 
-    
+# Retrieval of the infos of all the individuals, which is put in argument.    
 try:
     df_meta = pd.read_csv(filepath_or_buffer = options['path_to_data'] + options['metadata_file']['name'], sep = options['metadata_file']['sep'], index_col=0, low_memory=False)
-    # Retrieval of the infos of all the individuals, which is put in argument.
 except:
     raise NameError("Name of the metadata file is incorrect. Try changing it in the info.json program, line 4.")
 
+# Retrieval of the folder of all the individuals, which is put in argument.
 try: 
     folder_list = os.listdir(options['path_to_data'] + options['data_folder'])
-    # Retrieval of the folder of all the individuals, which is put in argument.
 except: 
     raise NameError("Name of the data folder is incorrect. Try changing it in the info.json program, line 2.")
+
 
 with alive_bar(bar='blocks') as bar :
     for folder_i in folder_list :
         if folder_i != ".DS_Store" :
-            folder_list_i = os.listdir(options['path_to_data'] + options['data_folder'] + "/" + folder_i)
             # For each individual, we get the list of audio file
+            folder_list_i = os.listdir(options['path_to_data'] + options['data_folder'] + "/" + folder_i)
 
             for folder_j in folder_list_i :
                 filename, file_extension = os.path.splitext(folder_j)

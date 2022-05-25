@@ -9,16 +9,15 @@ NC='\033[0m'              # No Color
 # Getting the informations contained in info.json
 path_to_data="$(grep -o '"path_to_data": "[^"]*' info.json | grep -o '[^"]*$')"
 output="$(grep -o '"output_folder": "[^"]*' info.json | grep -o '[^"]*$')""/"
-model_path=$PWD"/""$output"$model_file
 
 dict_file="$(grep -o '"dictionary_file": "[^"]*' info.json | grep -o '[^"]*$')"
 lex_file="$(grep -o '"lexicon_file": "[^"]*' info.json | grep -o '[^"]*$')"
 model_file="$(grep -o '"MFA_model_name": "[^"]*' info.json | grep -o '[^"]*$')"
 data_folder="$(grep -o '"data_folder": "[^"]*' info.json | grep -o '[^"]*$')"
-
+model_path=$PWD"/""$output"$model_file
 log="$output""log"
 
-# If a out folder doesn't exist, it creates one. It will contain every files the 
+# If the output folder doesn't exist, it creates one. It will contain all the files the tool creates (lexicon, dictionary, aligned text files)
 if [ ! -d "$output" ] 
 then
     mkdir $output
@@ -59,6 +58,8 @@ do
 shift
 done
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
+
 echo '========== Preparing folders =========='
 # We call the folder_prep.py program, using the informations in the info.json file and putting the errors messages in prep.log file located in log folder.
 python3 folder_prep.py info.json 2> "$log"/prep.log
@@ -74,7 +75,7 @@ else
     printf "${Green}SUCCESS${NC} : Preparation of folder.\n "
 fi
 
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 echo '========== Making lexicon ==========' 
 
@@ -98,8 +99,7 @@ else
     fi
 fi
 
-
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 echo '========== Making dictionnary =========='
 
@@ -120,13 +120,13 @@ python3 -m g2p --model ipd_clean_slt2018.mdl --apply "$output""$lex_file" --enco
     fi
 fi
 
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 echo '========== Validating the data =========='
 
 if $qu
 then
-    mfa validate --quiet "$path_to_data""$data_folder" "$output""$dict_file" 2> "$log"/val.log
+    mfa validate --quiet "$path_to_data""$data_folder" "$output""$dict_file" 2>&1 "$log"/val.log
 else
     mfa validate "$path_to_data""$data_folder" "$output""$dict_file" 2> "$log"/val.log
 fi
@@ -140,38 +140,61 @@ else
     printf "${Green}SUCCESS${NC} : Data validated. \n"
 fi    
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
-echo '========== Creating and Training the MFA model or align the file=========='
-
-# If a out folder doesn't exist, it creates one. It will contain every files the 
-if [ ! -d "$output""out" ] 
+if $mo
 then
-    mkdir $output'out'
-fi
-
-if [ $ov == false ] && [ -f "$output""$model_file"".zip" ]
-then
-    printf "${Yellow}NOTHING DONE${NC} : %s already created.\n " "$output""$model_file"
-
-else
+    echo '========== Align the files using the model =========='
     if $qu
     then
-        mfa train --output_model_path "$model_path" --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$output""out" 2> "$log"/train.log
+        mfa align --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
     else
-        mfa train --output_model_path "$model_path" --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$output""out" 2> "$log"/train.log
+        mfa align --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
     fi
 
     if [ "${?}" -eq 1 ] 
     then
-        echo "Last modification : ""$(date)" >> "$log"/train.log
-        printf "${Red}FAILURE${NC} : Something went wrong. See the log/train.log file for more information.\n "
+        echo "Last modification : ""$(date)" >> "$log"/align.log
+        printf "${Red}FAILURE${NC} : Something went wrong. See the align/train.log file for more information.\n "
         exit 5
     else
-        printf "${Green}SUCCESS${NC} : Training finished. \n"
-    fi        
+        printf "${Green}SUCCESS${NC} : Alignment finished. \n"
+    fi     
+
+else 
+
+    echo '========== Creating and Training the MFA model =========='
+
+    # If a out folder doesn't exist, it creates one. It will contain every files the 
+    if [ ! -d "$output""out" ] 
+    then
+        mkdir $output'out'
+    fi
+
+    if [ $ov == false ] && [ -f "$output""$model_file"".zip" ]
+    then
+        printf "${Yellow}NOTHING DONE${NC} : %s already created.\n " "$output""$model_file"
+
+    else
+        if $qu
+        then
+            mfa train --output_model_path "$model_path" --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$output""out" 2>&1 "$log"/train.log
+        else
+            mfa train --output_model_path "$model_path" --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$output""out" 2> "$log"/train.log
+        fi
+
+        if [ "${?}" -eq 1 ] 
+        then
+            echo "Last modification : ""$(date)" >> "$log"/train.log
+            printf "${Red}FAILURE${NC} : Something went wrong. See the log/train.log file for more information.\n "
+            exit 5
+        else
+            printf "${Green}SUCCESS${NC} : Training finished. \n"
+        fi        
+    fi
 fi
 
-
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 echo '========== Checking =========='   
 python3 segmentation_check.py info.json 2> "$log"/check.log
