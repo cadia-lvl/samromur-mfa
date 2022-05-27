@@ -69,7 +69,13 @@ done
 
 echo '========== Preparing folders =========='
 # We call the folder_prep.py program, using the informations in the info.json file and putting the errors messages in prep.log file located in log folder.
-python3 folder_prep.py info.json 2> "$log"/prep.log
+# If the user wants to overwrite on the potentially pre-existing .txt files, we add the '-o' option after the python command. It will be recognized by the folder_prep.py program.
+if [ $ov == true ]
+then
+    python3 folder_prep.py info.json -o 2> "$log"/prep.log
+else 
+    python3 folder_prep.py info.json 2> "$log"/prep.log
+fi
 
 # If an arror occured in the preparation of folder, it show a message and stop the program.
 if [ "${?}" -eq 1 ] 
