@@ -164,9 +164,19 @@ then
     echo '========== Adapting the dataset & align the files using the model =========='
     if $qu
     then
-        mfa adapt --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+        if $ov 
+        then
+            mfa adapt --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+        else
+            mfa adapt --quiet --clean "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+        fi
     else
-        mfa adapt --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+        if $ov
+        then
+            mfa adapt --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+        else
+            mfa adapt --clean "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+        fi
     fi
 
     if [ "${?}" -eq 1 ] 
