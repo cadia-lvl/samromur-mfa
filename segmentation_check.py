@@ -8,7 +8,7 @@ output_folder = options['output_folder'] + "/out"
 # Creation of an error folder if it doesn't exist yet
 error_folder = options['output_folder'] + "/" + options['empty_audio_user'] 
 error_file = error_folder + ".txt"
-if (error_folder not in os.listdir()) :
+if (error_folder not in os.listdir(options['output_folder'])) :
     os.mkdir(error_folder)
 
 folder_list = os.listdir(output_folder)

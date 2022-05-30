@@ -135,35 +135,38 @@ fi
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
-echo '========== Validating the data =========='
-
-if $qu
+if [ $mo == false ]  
 then
-    mfa validate --quiet "$path_to_data""$data_folder" "$output""$dict_file" 2>&1 "$log"/val.log
-else
-    mfa validate "$path_to_data""$data_folder" "$output""$dict_file" 2> "$log"/val.log
+    echo '========== Validating the data =========='
+
+    if $qu
+    then
+        mfa validate --quiet "$path_to_data""$data_folder" "$output""$dict_file" 2>&1 "$log"/val.log
+    else
+        mfa validate "$path_to_data""$data_folder" "$output""$dict_file" 2> "$log"/val.log
+    fi
+
+    if [ "${?}" -eq 1 ] 
+    then
+        echo "Last modification : ""$(date)" >> "$log"/val.log
+        printf "${Red}FAILURE${NC} : Something went wrong. See the log/val.log file for more information.\n "
+        exit 4
+    else
+        printf "${Green}SUCCESS${NC} : Data validated. \n"
+    fi    
 fi
-
-if [ "${?}" -eq 1 ] 
-then
-    echo "Last modification : ""$(date)" >> "$log"/val.log
-    printf "${Red}FAILURE${NC} : Something went wrong. See the log/val.log file for more information.\n "
-    exit 4
-else
-    printf "${Green}SUCCESS${NC} : Data validated. \n"
-fi    
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 # If the user want to use a pre-existing model, it will then use this model to align the files of the dataset.
 if $mo
 then
-    echo '========== Align the files using the model =========='
+    echo '========== Adapting the dataset & align the files using the model =========='
     if $qu
     then
-        mfa align --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+        mfa adapt --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
     else
-        mfa align --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+        mfa adapt --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
     fi
 
     if [ "${?}" -eq 1 ] 
