@@ -1,10 +1,11 @@
 {
-    "path_to_data": "/Users/Thomas/samromur_21.05_test_v2/",
+    "path_to_data": "/Users/Thomas/",
     "data_folder": "data",
     "metadata_file": {
         "name": "metadata.tsv",
         "columns_utt_name": "sentence_norm",
-        "sep": "\t"
+        "sep": "\t",
+        "speaker_len": 6
     },
     "empty_audio_user": "empty_data_test",
     "audio_extension": "flac",

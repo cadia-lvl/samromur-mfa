@@ -15,7 +15,7 @@ except:
 try:
     df_meta = pd.read_csv(filepath_or_buffer = options['path_to_data'] + options['metadata_file']['name'], sep = options['metadata_file']['sep'], index_col=0, low_memory=False)
 except:
-    raise NameError("Name of the metadata file is incorrect. Try changing it in the info.json program, line 4.")
+    raise NameError("Some information of the metadata file is incorrect. Try changing it in the info.json program, line 4.")
 
 # Retrieval of the folder of all the individuals, which is put in argument.
 try: 
@@ -43,7 +43,7 @@ with alive_bar(bar='blocks') as bar :
                 if not ( ( overwrite == False ) and ((filename + ".txt") in folder_list_i) ) :
                     # Checking if the file correspond to an audio file 
                     if ( (filename != ".DS_Store") and (file_extension == ('.' + options["audio_extension"])) ) :
-                        ind = int(filename[-7:])
+                        ind = int(filename[(-1 * options['metadata_file']['speaker_len']):])
                         # As the index of the audio file in the dataframe is the last part of the audio file name, we use that property 
                         # to get the sentence corresponding to the audio file in the dataframe :
                         sent = df_meta.loc[ind, options['metadata_file']['columns_utt_name']]
