@@ -1,4 +1,4 @@
-# Preparation for Montreal Forced Alignment with Samromur dataset
+# Using Montreal Forced Alignment on Samromur dataset
 This tool is to align and segmentate a dataset of audio files to prepare it for Kaldi ASR using Montreal Forced Alignment (MFA). 
 
 The purpose of this tool is to automatically generate aligned files using only the audio and metadata files. 
@@ -9,7 +9,7 @@ This tool have others features : it will create and save a lexicon and a diction
 
 
 # Table of Contents
-- [Preparation for Montreal Forced Alignment with Samromur dataset](#preparation-for-montreal-forced-alignment-with-samromur-dataset)
+- [Using Montreal Forced Alignment on Samromur dataset](#using-montreal-forced-alignment-on-samromur-dataset)
 - [Table of Contents](#table-of-contents)
 - [Requirements](#requirements)
   * [Input data](#input-data)
