@@ -135,26 +135,23 @@ fi
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
-if [ $mo == false ]  
+echo '========== Validating the data =========='
+
+if $qu
 then
-    echo '========== Validating the data =========='
-
-    if $qu
-    then
-        mfa validate --quiet "$path_to_data""$data_folder" "$output""$dict_file" 2>&1 "$log"/val.log
-    else
-        mfa validate "$path_to_data""$data_folder" "$output""$dict_file" 2> "$log"/val.log
-    fi
-
-    if [ "${?}" -eq 1 ] 
-    then
-        echo "Last modification : ""$(date)" >> "$log"/val.log
-        printf "${Red}FAILURE${NC} : Something went wrong. See the log/val.log file for more information.\n "
-        exit 4
-    else
-        printf "${Green}SUCCESS${NC} : Data validated. \n"
-    fi    
+    mfa validate --quiet "$path_to_data""$data_folder" "$output""$dict_file" 2>&1 "$log"/val.log
+else
+    mfa validate "$path_to_data""$data_folder" "$output""$dict_file" 2> "$log"/val.log
 fi
+
+if [ "${?}" -eq 1 ] 
+then
+    echo "Last modification : ""$(date)" >> "$log"/val.log
+    printf "${Red}FAILURE${NC} : Something went wrong. See the log/val.log file for more information.\n "
+    exit 4
+else
+    printf "${Green}SUCCESS${NC} : Data validated. \n"
+fi    
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
@@ -182,7 +179,7 @@ then
     if [ "${?}" -eq 1 ] 
     then
         echo "Last modification : ""$(date)" >> "$log"/align.log
-        printf "${Red}FAILURE${NC} : Something went wrong. See the align/train.log file for more information.\n "
+        printf "${Red}FAILURE${NC} : Something went wrong. See the log/align.log file for more information.\n "
         exit 5
     else
         printf "${Green}SUCCESS${NC} : Alignment finished. \n"

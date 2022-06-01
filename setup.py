@@ -5,7 +5,7 @@
 """
 
 ___author___ = "Thomas Mestrou"
-___license___ = "XXX"
+___license___ = "Apache License 2.0 January 2004"
 ___copyright___ = "2022 Thomas Mestrou Reykjavík University"
 
 from setuptools import setup, find_packages
