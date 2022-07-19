@@ -163,16 +163,16 @@ then
     then
         if $ov 
         then
-            mfa adapt --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+            mfa align --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
         else
-            mfa adapt --quiet --clean "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+            mfa align --quiet --clean "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
         fi
     else
         if $ov
         then
-            mfa adapt --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+            mfa align --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
         else
-            mfa adapt --clean "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+            mfa align --clean "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
         fi
     fi
 
@@ -236,3 +236,4 @@ else
 fi    
 
 printf "${Green}==================== Program finished without errors ====================${NC}\n "
+    
