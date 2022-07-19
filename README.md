@@ -93,15 +93,17 @@ All the information that can varies in the project are inside the `info.json` fi
 
 ```jsonc
 {
-    "path_to_data": "path/to/data/",
-    "data_folder": "data",
+    "path_to_data": "path/to/data",
+    "data_folder": "audio/",
     "metadata_file": {
         "name": "metadata.tsv",
         "columns_utt_name": "sentence_norm",
-        "sep": "\t"
+        "sep": "\t",
+        "speaker_len": 7
     },
     "empty_audio_user": "empty_data",
     "audio_extension": "flac",
+    "text_extension": "lab",
     "lexicon_file": "lexicon.lex",
     "dictionary_file": "icelandic.dict",
     "MFA_model_name": "mfa_model",
@@ -119,6 +121,7 @@ In order for the tool to work, it is necessary to adapt all the informations ins
     - **sep** : separator of the data.
 - **empty_audio_user** : the name of the folder which will eventually contain the audio files of the data that has not been aligned ;
 - **audio_extension** : the extension of the audio files ;
+- **text_extension** : the extension of the text file containing the utterances of the audio files ;
 - **lexicon_file** : the name of the file which will contain the lexicon of the input data ;
 - **dictionary_file** : name of the file which will contain the lexicon plus the phonemes of each word ;
 - **MFA_model_name*** : name of the model created by the MFA ;
@@ -196,9 +199,8 @@ If an error occur during the run, the program will stop and a message will be di
 
 ## Segmentation checking
 
-At the end of the process - after the files had been align - a program will check if the segmentation had been a success for every speaker's audio file and will display the percentage of folders having an error.
-If some folders are empty, a folder containing the speaker's audio files and a file with the id of the "missing speakers" will be created. The programm will ask the user if it should be corrected. If the user wants to correct it, then it will align the "missing data" using the model created before.
-
+At the end of the process - after the files had been align - a program will check if the segmentation had been a success for every audio files and will display the percentage of audio files having an error.
+If a text file corresponding to an audio file doesn't exist, a folder containing the speaker's audio files and a file with the id of the "missing speakers" will be created.
 
 # License
 See the [LICENSE](LICENSE.txt)
