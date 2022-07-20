@@ -24,13 +24,14 @@ except:
     raise NameError("Name of the data folder is incorrect. Try changing it in the info.json program, line 2.")
 
 # If the overwrite option was added, the 'overwrite' boolean is turned to True
-if ( (len(sys.argv) == 3) and (sys.argv[2] == '-o') ) :
+if ( (len(sys.argv) == 4) and (sys.argv[3] == '-o') ) :
     overwrite = True
 else :
     overwrite = False
 
+N=int(sys.argv[2])
 
-with alive_bar(bar='blocks') as bar :
+with alive_bar(N, bar="classic2") as bar :
     for folder_i in folder_list :
         if folder_i != ".DS_Store" :
             # For each individual, we get the list of audio file
@@ -39,17 +40,20 @@ with alive_bar(bar='blocks') as bar :
             for folder_j in folder_list_i :
                 filename, file_extension = os.path.splitext(folder_j)
 
-                # If the 'overwrite' boolean is True and 
-                if not ( ( overwrite == False ) and ((filename + ".txt") in folder_list_i) ) :
+                # If the 'overwrite' boolean is False and the text file of the corresponding audio file already exist in the folder,
+                # then we don't do anything. On the contrary, we create the text file
+                
+                if not ( ( overwrite == False ) and ((filename + "." + options['text_extension']) in folder_list_i) ) :
+                    
                     # Checking if the file correspond to an audio file 
                     if ( (filename != ".DS_Store") and (file_extension == ('.' + options["audio_extension"])) ) :
                         ind = int(filename[(-1 * options['metadata_file']['speaker_len']):])
                         # As the index of the audio file in the dataframe is the last part of the audio file name, we use that property 
                         # to get the sentence corresponding to the audio file in the dataframe :
                         sent = df_meta.loc[ind, options['metadata_file']['columns_utt_name']]
-
+                        
                         # We create a file for every sentence/utterance, which got the same name as the audio file, and has the .txt extension.
-                        f = open(options['path_to_data'] + options['data_folder'] + "/" + folder_i + "/" + filename + ".txt", "w")
+                        f = open(options['path_to_data'] + options['data_folder'] + "/" + folder_i + "/" + filename + "." + options["text_extension"], "w")
                         f.write(sent)
                         f.close() 
     

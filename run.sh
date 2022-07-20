@@ -7,13 +7,14 @@ Yellow='\033[0;33m'       # Yellow
 NC='\033[0m'              # No Color
 
 # Getting the informations contained in info.json
-path_to_data="$(grep -o '"path_to_data": "[^"]*' local/info.json | grep -o '[^"]*$')"
-output="$(grep -o '"output_folder": "[^"]*' local/info.json | grep -o '[^"]*$')""/"
+path_to_data="$(grep -o '"path_to_data": "[^"]*' info.json | grep -o '[^"]*$')"
+output="$(grep -o '"output_folder": "[^"]*' info.json | grep -o '[^"]*$')""/"
 
-dict_file="$(grep -o '"dictionary_file": "[^"]*' local/info.json | grep -o '[^"]*$')"
-lex_file="$(grep -o '"lexicon_file": "[^"]*' local/info.json | grep -o '[^"]*$')"
-model_file="$(grep -o '"MFA_model_name": "[^"]*' local/info.json | grep -o '[^"]*$')"
-data_folder="$(grep -o '"data_folder": "[^"]*' local/info.json | grep -o '[^"]*$')"
+dict_file="$(grep -o '"dictionary_file": "[^"]*' info.json | grep -o '[^"]*$')"
+lex_file="$(grep -o '"lexicon_file": "[^"]*' info.json | grep -o '[^"]*$')"
+model_file="$(grep -o '"MFA_model_name": "[^"]*' info.json | grep -o '[^"]*$')"
+data_folder="$(grep -o '"data_folder": "[^"]*' info.json | grep -o '[^"]*$')"
+audio_extension="$(grep -o '"audio_extension": "[^"]*' info.json | grep -o '[^"]*$')"
 model_path=$PWD"/""$output"$model_file
 log="$output""log"
 
@@ -70,11 +71,15 @@ done
 echo '========== Preparing folders =========='
 # We call the folder_prep.py program, using the informations in the info.json file and putting the errors messages in prep.log file located in log folder.
 # If the user wants to overwrite on the potentially pre-existing .txt files, we add the '-o' option after the python command. It will be recognized by the folder_prep.py program.
+
+# N is the number of audio file to treat
+N=$(find "$path_to_data"/"$data_folder"/* -name "*."$audio_extension | wc -l)
+
 if [ $ov == true ]
 then
-    python3 local/folder_prep.py local/info.json -o 2> "$log"/prep.log
+    python3 folder_prep.py info.json $N -o 2> "$log"/prep.log
 else 
-    python3 local/folder_prep.py local/info.json 2> "$log"/prep.log
+    python3 folder_prep.py info.json $N 2> "$log"/prep.log
 fi
 
 # If an arror occured in the preparation of folder, it show a message and stop the program.
@@ -99,7 +104,7 @@ then
     printf "${Yellow}NOTHING DONE${NC} : %s already existing.\n " "$lex_file"
 else
 
-    python3 local/make_lexicon.py local/info.json 2> "$log"/lex.log
+    python3 make_lexicon.py info.json 2> "$log"/lex.log
 
     if [ "${?}" -eq 1 ] 
     then
@@ -112,6 +117,7 @@ else
     fi
 fi
 
+exit 1
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 echo '========== Making dictionnary =========='
@@ -224,7 +230,7 @@ fi
 # Ths program will check if the alignment has been done for all the files. If not, it will put all the non-aligned files in a separate folder.
 # It will always display the percentage of missing folders
 echo '========== Checking =========='   
-python3 local/segmentation_check.py local/info.json 2> "$log"/check.log
+python3 segmentation_check.py info.json 2> "$log"/check.log
 
 if [ "${?}" -eq 1 ] 
 then
@@ -236,4 +242,3 @@ else
 fi    
 
 printf "${Green}==================== Program finished without errors ====================${NC}\n "
-    
