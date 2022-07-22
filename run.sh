@@ -15,8 +15,10 @@ lex_file="$(grep -o '"lexicon_file": "[^"]*' local/info.json | grep -o '[^"]*$')
 model_file="$(grep -o '"MFA_model_name": "[^"]*' local/info.json | grep -o '[^"]*$')"
 data_folder="$(grep -o '"data_folder": "[^"]*' local/info.json | grep -o '[^"]*$')"
 audio_extension="$(grep -o '"audio_extension": "[^"]*' local/info.json | grep -o '[^"]*$')"
+text_extension="$(grep -o '"text_extension": "[^"]*' local/info.json | grep -o '[^"]*$')"
 model_path=$PWD"/""$output"$model_file
 log="$output""log"
+N_audio_file=$(find "$path_to_data"/"$data_folder"/* -name "*."$audio_extension | wc -l)
 
 # If the output folder doesn't exist, it creates one. It will contain all the files the tool creates (lexicon, dictionary, aligned text files)
 if [ ! -d "$output" ] 
@@ -68,18 +70,23 @@ done
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
+# CONTROL PANEL
+from_stage=5
+to_stage=5
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
+
+current_stage=0
+if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
 echo '========== Preparing folders =========='
 # We call the folder_prep.py program, using the informations in the info.json file and putting the errors messages in prep.log file located in log folder.
 # If the user wants to overwrite on the potentially pre-existing .txt files, we add the '-o' option after the python command. It will be recognized by the folder_prep.py program.
 
-# N is the number of audio file to treat
-N=$(find "$path_to_data"/"$data_folder"/* -name "*."$audio_extension | wc -l)
-
 if [ $ov == true ]
 then
-    python3 local/folder_prep.py local/info.json $N -o 2> "$log"/prep.log
+    python3 local/folder_prep.py local/info.json $N_audio_file -o 2> "$log"/prep.log
 else 
-    python3 local/folder_prep.py local/info.json $N 2> "$log"/prep.log
+    python3 local/folder_prep.py local/info.json $N_audio_file 2> "$log"/prep.log
 fi
 
 # If an arror occured in the preparation of folder, it show a message and stop the program.
@@ -92,9 +99,12 @@ then
 else
     printf "${Green}SUCCESS${NC} : Preparation of folder.\n "
 fi
+fi
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
+current_stage=1
+if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
 echo '========== Making lexicon ==========' 
 
 # If the user doesn't want to overwrite on existing file and if there is an existing file, it displays a message and go to the next step. 
@@ -116,9 +126,12 @@ else
         printf "${Green}SUCCESS${NC} : Lexicon made. \n"
     fi
 fi
+fi
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
+current_stage=2
+if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
 echo '========== Making dictionnary =========='
 
 if [ $ov == false ] && [ -f "$output""$dict_file" ]
@@ -137,9 +150,12 @@ python3 -m g2p --model ipd_clean_slt2018.mdl --apply "$output""$lex_file" --enco
         printf "${Green}SUCCESS${NC} : Dictionnary made. \n"
     fi
 fi
+fi
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
+current_stage=3
+if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
 echo '========== Validating the data =========='
 
 if $qu
@@ -156,10 +172,13 @@ then
     exit 4
 else
     printf "${Green}SUCCESS${NC} : Data validated. \n"
-fi    
+fi 
+fi
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
+current_stage=4
+if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
 # If the user want to use a pre-existing model, it will then use this model to align the files of the dataset.
 if $mo
 then
@@ -223,13 +242,19 @@ else
         fi        
     fi
 fi
+fi
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
-# Ths program will check if the alignment has been done for all the files. If not, it will put all the non-aligned files in a separate folder.
+current_stage=5
+if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
+
+# Ths stage will check if the alignment has been done for all the files. If not, it will put all the non-aligned files in a separate folder.
 # It will always display the percentage of missing folders
 echo '========== Checking =========='   
-python3 local/segmentation_check.py local/info.json 2> "$log"/check.log
+
+N_file=$(expr $(find "$path_to_data"/"$data_folder"/* -name "*."$audio_extension | wc -l) + $(find "$path_to_data"/"$data_folder"/* -name "*."$text_extension | wc -l) )
+python3 local/alignment_check.py local/info.json $N_file 2> "$log"/check.log
 
 if [ "${?}" -eq 1 ] 
 then
@@ -239,5 +264,6 @@ then
 else
     printf "${Green}SUCCESS${NC} : Checking finished. \n"
 fi    
+fi
 
 printf "${Green}==================== Program finished without errors ====================${NC}\n "
