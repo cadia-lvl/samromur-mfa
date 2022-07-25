@@ -6,6 +6,7 @@ To make this, the toolkit can :
 - create and use an acoustic model (using all the data) to align the data ; or
 - use a pre-existing acoustic model to align the data.
 
+
 This tool have others features : 
 - creating and saving a lexicon and a dictionary of all the words inside the dataset
 - checking if the alignment has been correctly done for all the folders and proposes different options to the user
