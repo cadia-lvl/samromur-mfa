@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
+
+# HELP fonction
+Help(){
+    echo "usage: ./run.sh [-h] [-o] [-m ACOUSTIC_MODEL_PATH] [-d DICTIONARY_PATH] [-td OUTPUT_DICTIONARY_PATH {ACOUSTIC_MODEL_PATH}]"
+    echo ""
+
+    echo "options: "
+    echo "  -h, --help                show this help message and exit"
+    echo "  -o, --overwrite           overwrite output files when they exist, default is False"
+    echo "  -m, --model               use the acoustic model put in parameter to align files"
+    echo "  -d, --dictionary          use the dictionary put in parameter instead of using the one created during the run"
+    echo "  -td, --train_dictionary   create another dictionary adding the pronunciation dictionary in the path mut in parameters. The user can also put an acoustic model in parameters to train the dictionary, instead of using the one created during the run."
+}
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
+
 # Colors for text
 Red='\033[0;31m'          # Red
 Green='\033[0;32m'        # Green
@@ -10,8 +27,8 @@ NC='\033[0m'              # No Color
 path_to_data="$(grep -o '"path_to_data": "[^"]*' local/info.json | grep -o '[^"]*$')"
 output="$(grep -o '"output_folder": "[^"]*' local/info.json | grep -o '[^"]*$')""/"
 
-dict_file="$(grep -o '"dictionary_file": "[^"]*' local/info.json | grep -o '[^"]*$')"
-lex_file="$(grep -o '"lexicon_file": "[^"]*' local/info.json | grep -o '[^"]*$')"
+dict_path=$output"$(grep -o '"dictionary_file": "[^"]*' local/info.json | grep -o '[^"]*$')"
+lex_path=$output"$(grep -o '"lexicon_file": "[^"]*' local/info.json | grep -o '[^"]*$')"
 model_file="$(grep -o '"MFA_model_name": "[^"]*' local/info.json | grep -o '[^"]*$')"
 data_folder="$(grep -o '"data_folder": "[^"]*' local/info.json | grep -o '[^"]*$')"
 audio_extension="$(grep -o '"audio_extension": "[^"]*' local/info.json | grep -o '[^"]*$')"
@@ -36,11 +53,18 @@ fi
 ov=false
 qu=false
 mo=false
+di=false
+train_dict=false
 
 # We get all the options the users wrote. 
 while [ ! -z "$1" ]
 do
     case $1 in
+        # If the user wants to display the help message.
+        -h|--help)
+            Help
+            exit 0
+            ;;
         # If the user wrote '-o' or '--overwrite', the the 'ov' variable will be changed to 'true'
         # This option means the user wants to overwrite on existing files
         -o|--overwrite)
@@ -56,14 +80,46 @@ do
         -m|--model)
             mo=true
             shift
-            if [ -f "$1" ]
-            then
+            if [ -f "$1" ]; then
                 model_path=$1
             else 
                 printf "${Red}FAILURE${NC} : The model path has not been initialized.\n"
                 exit 1
             fi
             ;;
+        # If the user wants to use a pre-existing dictionary, he can put this option with the path to the dictionary in parameter.
+        -d|--dictionary)
+            di=true
+            shift
+            if [ -f "$1" ]; then
+                dict_path=$1
+            else 
+                printf "${Red}FAILURE${NC} : The dictionary path has not been indicated.\n"
+                exit 1
+            fi
+            ;;
+        # This will create another dictionary, whose path has to be in parameter, containing the pronunciations probabilities.
+        # The user can put a pre-existing acoustic model in parameter to train the model. By default it will use the model created previously.
+	    -td|--train_dictionary)
+	        train_dict=true
+            shift
+            if [ ! -z "$1" ]; then
+                output_dict=$1
+            else
+                printf "${Red}FAILURE${NC} : The output dictionary name has not been indicated.\n"
+            fi
+
+            shift
+            if [ -f "$1" ]; then
+                acoustic_model=$2
+            else
+                acoustic_model=$model_path".zip"
+	        fi
+	        ;;
+        # If none of the past option exist, then it displays an error.
+	    *)
+	        printf "${Red}FAILURE${NC} : The option hasn't been recognized. \n"
+	        exit 1 
     esac
 shift
 done
@@ -71,8 +127,8 @@ done
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 # CONTROL PANEL
-from_stage=5
-to_stage=5
+from_stage=0
+to_stage=6
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
@@ -90,11 +146,11 @@ else
 fi
 
 # If an arror occured in the preparation of folder, it show a message and stop the program.
-if [ "${?}" -eq 1 ] 
+if [ "${?}" -eq 1 ]
 then
     # In the end of every log file, we put the date and time of the last modification.
     echo "Last modification : ""$(date)" >> "$log"/prep.log
-    printf "${Red}FAILURE${NC} : Something went wrong. See the log/prep.log file for more information.\n "
+    printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/prep.log
     exit 1
 else
     printf "${Green}SUCCESS${NC} : Preparation of folder.\n "
@@ -108,20 +164,16 @@ if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
 echo '========== Making lexicon ==========' 
 
 # If the user doesn't want to overwrite on existing file and if there is an existing file, it displays a message and go to the next step. 
-if [ $ov == false ] && [ -f "$output""$lex_file" ]
-then
-
-    printf "${Yellow}NOTHING DONE${NC} : %s already existing.\n " "$lex_file"
+if [ $ov == false ] && [ -f "$lex_path" ]; then
+    printf "${Yellow}NOTHING DONE${NC} : %s already existing.\n " "$lex_path"
 else
-
     python3 local/make_lexicon.py local/info.json 2> "$log"/lex.log
 
     if [ "${?}" -eq 1 ] 
     then
         echo "Last modification : ""$(date)" >> "$log"/lex.log
-        printf "${Red}FAILURE${NC} : Something went wrong. See the log/lex.log file for more information. \n "
+        printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information. \n " "$log"/lex.log
         exit 2
-
     else
         printf "${Green}SUCCESS${NC} : Lexicon made. \n"
     fi
@@ -134,17 +186,16 @@ current_stage=2
 if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
 echo '========== Making dictionnary =========='
 
-if [ $ov == false ] && [ -f "$output""$dict_file" ]
-then
-    printf "${Yellow}NOTHING DONE${NC} : %s already existing.\n " "$output""$dict_file"
+if [ $ov == false ] && [ -f "$dict_path" ] || [ $di == true ] && [ -f "$dict_path" ]; then
+	printf "${Yellow}NOTHING DONE${NC} : %s already existing.\n " "$dict_path"
 else
     # We create a dictionary of phoneme  using the lexicon, the model 'ipd_clean_slt2018.mdl'.
-python3 -m g2p --model ipd_clean_slt2018.mdl --apply "$output""$lex_file" --encoding='utf-8' 1> "$output""$dict_file" 2> "$log"/dict.log
+    python3 -m g2p --model ipd_clean_slt2018 --apply "$lex_path" --encoding='utf-8' 1> "$dict_path" 2> "$log"/dict.log
 
     if [ "${?}" -eq 1 ] 
     then
         echo "Last modification : ""$(date)" >> "$log"/dict.log
-        printf "${Red}FAILURE${NC} : Something went wrong. See the log/dict.log file for more information.\n "
+        printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/dict.log
         exit 3
     else
         printf "${Green}SUCCESS${NC} : Dictionnary made. \n"
@@ -160,15 +211,15 @@ echo '========== Validating the data =========='
 
 if $qu
 then
-    mfa validate --quiet "$path_to_data""$data_folder" "$output""$dict_file" 2>&1 "$log"/val.log
+    mfa validate --quiet "$path_to_data""$data_folder" "$dict_path" 2>&1 "$log"/val.log
 else
-    mfa validate "$path_to_data""$data_folder" "$output""$dict_file" 2> "$log"/val.log
+    mfa validate "$path_to_data""$data_folder" "$dict_path" 2> "$log"/val.log
 fi
 
 if [ "${?}" -eq 1 ] 
 then
     echo "Last modification : ""$(date)" >> "$log"/val.log
-    printf "${Red}FAILURE${NC} : Something went wrong. See the log/val.log file for more information.\n "
+    printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/val.log
     exit 4
 else
     printf "${Green}SUCCESS${NC} : Data validated. \n"
@@ -182,28 +233,28 @@ if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
 # If the user want to use a pre-existing model, it will then use this model to align the files of the dataset.
 if $mo
 then
-    echo '========== Adapting the dataset & align the files using the model =========='
+echo '========== Adapting the dataset & align the files using the model =========='
     if $qu
     then
         if $ov 
         then
-            mfa align --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+            mfa align --quiet --clean --overwrite "$path_to_data""$data_folder" "$dict_path" "$model_path" "$output""out" 2> "$log"/align.log
         else
-            mfa align --quiet --clean "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+            mfa align --quiet --clean "$path_to_data""$data_folder" "$dict_path" "$model_path" "$output""out" 2> "$log"/align.log
         fi
     else
         if $ov
         then
-            mfa align --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+            mfa align --clean --overwrite "$path_to_data""$data_folder" "$dict_path" "$model_path" "$output""out" 2> "$log"/align.log
         else
-            mfa align --clean "$path_to_data""$data_folder" "$output""$dict_file" "$model_path" "$output""out" 2> "$log"/align.log
+            mfa align --clean "$path_to_data""$data_folder" "$dict_path" "$model_path" "$output""out" 2> "$log"/align.log
         fi
     fi
 
     if [ "${?}" -eq 1 ] 
     then
         echo "Last modification : ""$(date)" >> "$log"/align.log
-        printf "${Red}FAILURE${NC} : Something went wrong. See the log/align.log file for more information.\n "
+        printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/align.log
         exit 5
     else
         printf "${Green}SUCCESS${NC} : Alignment finished. \n"
@@ -227,15 +278,15 @@ else
     else
         if $qu
         then
-            mfa train --output_model_path "$model_path" --quiet --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$output""out" 2>&1 "$log"/train.log
+            mfa train --output_model_path "$model_path" --quiet --clean --overwrite "$path_to_data""$data_folder" "$dict_path" "$output""out" 2>&1 "$log"/train.log
         else
-            mfa train --output_model_path "$model_path" --clean --overwrite "$path_to_data""$data_folder" "$output""$dict_file" "$output""out" 2> "$log"/train.log
+            mfa train --output_model_path "$model_path" --clean --overwrite "$path_to_data""$data_folder" "$dict_path" "$output""out" 2> "$log"/train.log
         fi
 
         if [ "${?}" -eq 1 ] 
         then
             echo "Last modification : ""$(date)" >> "$log"/train.log
-            printf "${Red}FAILURE${NC} : Something went wrong. See the log/train.log file for more information.\n "
+            printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/train.log
             exit 5
         else
             printf "${Green}SUCCESS${NC} : Training finished. \n"
@@ -259,11 +310,47 @@ python3 local/alignment_check.py local/info.json $N_file 2> "$log"/check.log
 if [ "${?}" -eq 1 ] 
 then
     echo "Last modification : ""$(date)" >> "$log"/check.log
-    printf "${Red}FAILURE${NC} : Something went wrong. See the log/check.log file for more information.\n "
+    printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/check.log
     exit 6
 else
     printf "${Green}SUCCESS${NC} : Checking finished. \n"
 fi    
 fi
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
+
+current_stage=6
+if [ $train_dict == true ]; then
+if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
+echo '========== Training the dictionary =========='
+    if $qu
+    then
+	if $ov
+	then
+        mfa train_dictionary --quiet --clean --overwrite "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2>&1 "$log"/train_dict.log
+	else
+	    mfa train_dictionary --quiet --clean "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2>&1 "$log"/train_dict.log
+	fi
+    else
+	if $ov
+	then
+	    mfa train_dictionary --clean --overwrite "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2> "$log"/train_dict.log
+	else
+	    mfa train_dictionary --clean "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2> "$log"/train_dict.log
+        fi
+    fi
+fi
+
+if [ "${?}" -eq 1 ]
+then
+    echo "Last modification : ""$(date)" >> "$log"/val.log
+    printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/train_dict.log
+    exit 4
+else
+    printf "${Green}SUCCESS${NC} : Dictionary trained. \n"
+fi
+fi
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 printf "${Green}==================== Program finished without errors ====================${NC}\n "
