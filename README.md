@@ -32,6 +32,21 @@ It can also optionnaly create a pronunciation-probabilities dictionary.
 
 # Requirements
 
+## Computer
+
+To run the toolkit, you will need the following packages and modules :
+
+In Python :
+
+- os, sys and json : included in python
+- pandas : https://pypi.org/project/pandas/
+- alive-progress : https://pypi.org/project/alive-progress/
+
+Others :
+
+- Sequitur G2P : https://www-i6.informatik.rwth-aachen.de/web/Software/g2p.html
+- Montreal Forced Aligner : https://montreal-forced-aligner.readthedocs.io/en/latest/getting_started.html
+
 ## Input data
 
 The input is a folder with multiple speakers, for which there are one or several audio file. An audio file is made up of a sentence, spoke in Icelandic. To use this tool, the data has to be in this form :
