@@ -111,7 +111,7 @@ do
 
             shift
             if [ -f "$1" ]; then
-                acoustic_model=$2
+                acoustic_model=$1
             else
                 acoustic_model=$model_path".zip"
 	        fi
