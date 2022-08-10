@@ -12,7 +12,7 @@ Help(){
     echo "  -o, --overwrite           overwrite output files when they exist, default is False"
     echo "  -m, --model               use the acoustic model put in parameter to align files"
     echo "  -d, --dictionary          use the dictionary put in parameter instead of using the one created during the run"
-    echo "  -td, --train_dictionary   create another dictionary adding the pronunciation dictionary in the path mut in parameters. The user can also put an acoustic model in parameters to train the dictionary, instead of using the one created during the run."
+    echo "  -td, --pronun_dictionary   create another dictionary adding the pronunciation dictionary in the path mut in parameters. The user can also put an acoustic model in parameters to train the dictionary, instead of using the one created during the run."
 }
 
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
@@ -49,12 +49,12 @@ then
     mkdir $output'log'
 fi
 
-# Initialize the options "overwrite", "quiet" and "model"
-ov=false
-qu=false
-mo=false
-di=false
-train_dict=false
+# Initialize the options 
+ov=false # Overwrite 
+qu=false # Quiet
+mo=false # Acoustic model
+di=false # Dictionary
+pronun_dict=false # Pronunciation dictionary
 
 # We get all the options the users wrote. 
 while [ ! -z "$1" ]
@@ -100,8 +100,8 @@ do
             ;;
         # This will create another dictionary, whose path has to be in parameter, containing the pronunciations probabilities.
         # The user can put a pre-existing acoustic model in parameter to train the model. By default it will use the model created previously.
-	    -td|--train_dictionary)
-	        train_dict=true
+	    -td|--pronun_dictionary)
+	        pronun_dict=true
             shift
             if [ ! -z "$1" ]; then
                 output_dict=$1
@@ -169,7 +169,7 @@ if [ $ov == false ] && [ -f "$lex_path" ]; then
 else
     python3 local/make_lexicon.py local/info.json 2> "$log"/lex.log
 
-    if [ "${?}" -eq 1 ] 
+    if [ "${?}" -ne 0 ] 
     then
         echo "Last modification : ""$(date)" >> "$log"/lex.log
         printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information. \n " "$log"/lex.log
@@ -192,7 +192,7 @@ else
     # We create a dictionary of phoneme  using the lexicon, the model 'ipd_clean_slt2018.mdl'.
     python3 -m g2p --model ipd_clean_slt2018 --apply "$lex_path" --encoding='utf-8' 1> "$dict_path" 2> "$log"/dict.log
 
-    if [ "${?}" -eq 1 ] 
+    if [ "${?}" -ne 0 ] 
     then
         echo "Last modification : ""$(date)" >> "$log"/dict.log
         printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/dict.log
@@ -216,7 +216,7 @@ else
     mfa validate "$path_to_data""$data_folder" "$dict_path" 2> "$log"/val.log
 fi
 
-if [ "${?}" -eq 1 ] 
+if [ "${?}" -ne 0 ] 
 then
     echo "Last modification : ""$(date)" >> "$log"/val.log
     printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/val.log
@@ -251,7 +251,7 @@ echo '========== Adapting the dataset & align the files using the model ========
         fi
     fi
 
-    if [ "${?}" -eq 1 ] 
+    if [ "${?}" -ne 0 ] 
     then
         echo "Last modification : ""$(date)" >> "$log"/align.log
         printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/align.log
@@ -307,7 +307,7 @@ echo '========== Checking =========='
 N_file=$(expr $(find "$path_to_data"/"$data_folder"/* -name "*."$audio_extension | wc -l) + $(find "$path_to_data"/"$data_folder"/* -name "*."$text_extension | wc -l) )
 python3 local/alignment_check.py local/info.json $N_file 2> "$log"/check.log
 
-if [ "${?}" -eq 1 ] 
+if [ "${?}" -ne 0 ] 
 then
     echo "Last modification : ""$(date)" >> "$log"/check.log
     printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/check.log
@@ -320,31 +320,31 @@ fi
 # ------------------------------------------------------------------------------------------------------------------------------------------------ #
 
 current_stage=6
-if [ $train_dict == true ]; then
+if [ $pronun_dict == true ]; then
 if  [ $current_stage -ge $from_stage ] && [ $current_stage -le $to_stage ]; then
 echo '========== Training the dictionary =========='
     if $qu
     then
 	if $ov
 	then
-        mfa train_dictionary --quiet --clean --overwrite "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2>&1 "$log"/train_dict.log
+        mfa pronun_dictionary --quiet --clean --overwrite "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2>&1 "$log"/pronun_dict.log
 	else
-	    mfa train_dictionary --quiet --clean "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2>&1 "$log"/train_dict.log
+	    mfa pronun_dictionary --quiet --clean "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2>&1 "$log"/pronun_dict.log
 	fi
     else
 	if $ov
 	then
-	    mfa train_dictionary --clean --overwrite "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2> "$log"/train_dict.log
+	    mfa pronun_dictionary --clean --overwrite "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2> "$log"/pronun_dict.log
 	else
-	    mfa train_dictionary --clean "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2> "$log"/train_dict.log
+	    mfa pronun_dictionary --clean "$path_to_data""$data_folder" "$dict_path" "$acoustic_model" "$output_dict" 2> "$log"/pronun_dict.log
         fi
     fi
 fi
 
-if [ "${?}" -eq 1 ]
+if [ "${?}" -ne 0 ]
 then
     echo "Last modification : ""$(date)" >> "$log"/val.log
-    printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/train_dict.log
+    printf "${Red}FAILURE${NC} : Something went wrong. See the %s file for more information.\n " "$log"/pronun_dict.log
     exit 4
 else
     printf "${Green}SUCCESS${NC} : Dictionary trained. \n"
