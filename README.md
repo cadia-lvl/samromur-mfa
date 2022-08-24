@@ -390,27 +390,27 @@ See the [Segmentation checking section](#segmentation-checking)
 The final step of this toolkit will create a dictionary containing a dictionary with the pronunciation probabilities of each words. The file will finaly looks like this :
 
 ```
-að  0.99    aː ð
-aftur   0.99    a f t ʏ r
-aldri   0.99    a l t r ɪ
-aðalstrætis 0.99    aː ð a l s t r aiː t ɪ s
-askja   0.99    a s c a
-akranes 0.99    aː k r a n ɛː s
-auðvitað    0.99    œy ð v ɪ t a ð
-annarra 0.99    a n a r a
-aukaverkanir    0.99    œyː k a v ɛ r̥ k a n ɪ r
-aðrir   0.99    a ð r ɪ r
-anna    0.99    a n a
-ameríski    0.99    aː m ɛ r i s c ɪ
-ameríku 0.99    aː m ɛ r i k ʏ
-ameríka 0.99    aː m ɛ r i k a
-af  0.99    aː v
-annars  0.99    a n a r̥ s
-aðferðin    0.99    a ð f ɛ r ð ɪ n
-aðeins  0.99    aː ð ei n s
-anatólíu    0.99    aː n a t ou l i j ʏ
-algengar    0.99    a l c ei ŋ k a r
-annesjum    0.99    a n ɛ s j ʏ m
-alltaf  0.99    a l̥ t a v
+að	0.99	0.16	0.81	1.06	aː ð
+aftur	0.99	0.35	0.79	1.07	a f t ʏ r
+aldri	0.99	0.5	0.7	1.11	a l t r ɪ
+aðalstrætis	0.99	0.52	0.89	1.09	aː ð a l s t r aiː t ɪ s
+askja	0.99	0.31	2.29	0.41	a s c a
+akranes	0.99	0.14	0.85	1.1	aː k r a n ɛː s
+auðvitað	0.99	0.24	3.55	0.47	œy ð v ɪ t a ð
+annarra	0.99	0.23	0.67	1.15	a n a r a
+aukaverkanir	0.99	0.64	1.48	0.61	œyː k a v ɛ r̥ k a n ɪ r
+aðrir	0.99	0.28	2.67	0.6	a ð r ɪ r
+anna	0.99	0.32	2.96	0.49	a n a
+ameríski	0.99	0.19	1.49	0.67	aː m ɛ r i s c ɪ
+ameríku	0.99	0.59	1.11	0.96	aː m ɛ r i k ʏ
+ameríka	0.99	0.26	0.99	1.01	aː m ɛ r i k a
+af	0.99	0.25	1.37	0.86	aː v
+annars	0.99	0.2	3.39	0.54	a n a r̥ s
+aðferðin	0.99	0.19	1.55	0.81	a ð f ɛ r ð ɪ n
+aðeins	0.99	0.28	1.89	0.74	aː ð ei n s
+anatólíu	0.99	0.52	0.93	1.05	aː n a t ou l i j ʏ
+algengar	0.99	0.32	0.5	1.22	a l c ei ŋ k a r
+annesjum	0.99	0.19	0.89	1.09	a n ɛ s j ʏ m
+alltaf	0.99	0.3	1.43	0.89	a l̥ t a v
 ```
 
